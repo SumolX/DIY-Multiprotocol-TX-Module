@@ -351,6 +351,18 @@
 #define HOTT_FW_TELEMETRY			// Forward received telemetry packets to be decoded by erskyTX and OpenTX
 #define BAYANG_RX_TELEMETRY			// Forward channels data to TX
 
+//Uncomment to override STM32 telemetry serial baudrate and parity for all protocols.
+//Usefull for those whom attach a bluetooth HC-05/HM-10 to the telemetry TX line.
+//Most BT dongles default to 9600, replace 115200 with 9600 for initial testing.
+//#define STM32_TELEMETRY_FORCED_SERIAL_PARAMS 115200,SERIAL_8N1
+
+//Referenced in Telemetry.ino, applies original or forced parameters.
+#if defined(STM32_TELEMETRY_FORCED_SERIAL_PARAMS)
+    #define STM32_TELEMETRY_SERIAL_PARAMS(baud,parity) STM32_TELEMETRY_FORCED_SERIAL_PARAMS
+#else
+    #define STM32_TELEMETRY_SERIAL_PARAMS(baud,parity) baud,parity
+#endif
+
 /**************************/
 /***  TRAINER SETTINGS  ***/
 /**************************/
