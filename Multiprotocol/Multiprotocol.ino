@@ -37,11 +37,6 @@
 //Multiprotocol module configuration file
 #include "_Config.h"
 
-//Personal config file
-#if defined(USE_MY_CONFIG)
-#include "_MyConfig.h"
-#endif
-
 #include "Pins.h"
 #include "TX_Def.h"
 #include "Validate.h"
