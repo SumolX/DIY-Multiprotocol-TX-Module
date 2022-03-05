@@ -9,13 +9,29 @@
 /**************************/
 /***    DESCRIPTION     ***/
 /**************************/
+// Futaba 8FG Super Configuration
+// Switch Mapping:
+//   01 - Aileron
+//   02 - Elevator
+//   03 - Throttle
+//   02 - Rudder
+//   05 - SF - Arm
+//   06 - SE - Mode
+//   07 - SA - Available
+//   08 - SB - Available
+//   09 - LS - Camera Tilt
+//   10 - SC - Available
+//   11 - SD - Available
+//   12 - SG - Available
+//   13 - RS - Digital 1 ON Upper
+//   14 - RS - Digital 2 ON Lower
+
 // Telemetry settings defined below allow for direct 
 // communications with BT dongles such as HC-05 and
 // HM-10 devices.
 
-// PPM settings defined below allow for supporting 5
-// Banks worth of protocols and map the PPM signal to
-// a Futuba 8FG Super.
+// PPM settings defined below are mapped to my model
+// configuration (Futaba 8FG Super).
 
 /**************************/
 /*** TELEMETRY SETTINGS ***/
@@ -23,7 +39,6 @@
 #undef INVERT_TELEMETRY
 #undef INVERT_TELEMETRY_TX
 #define STM32_TELEMETRY_FORCED_SERIAL_PARAMS 115200,SERIAL_8N1
-
 
 /*************************/
 /*** PPM MODE SETTINGS ***/
@@ -34,5 +49,26 @@
 #define PPM_MIN_100 1070
 
 #undef NBR_BANKS
-#define NBR_BANKS 5
+#define NBR_BANKS 1
 
+#define PPM_PARAMETER_OVERRIDE
+const PPM_Parameters PPM_prot[14*NBR_BANKS]=  {
+#if NBR_BANKS > 0
+//******************************       BANK 1       ******************************
+//  Switch  Protocol       Sub protocol RX_Num Power   Auto Bind Option Chan Order
+/*  1  */   {PROTO_DSM,    DSM2_1F,     0,     P_HIGH, AUTOBIND, 6,     0x00000000 }, // Eflite Blade mX S300
+/*  2  */   {PROTO_FRSKYD, NONE,        0,     P_HIGH, AUTOBIND, 40,    0x00000000 }, // TinyHawk 3
+/*  3  */   {PROTO_FRSKYV, NONE,        0,     P_HIGH, AUTOBIND, 40,    0x00000000 }, // Available
+/*  4  */   {PROTO_FRSKYD, NONE,        0,     P_HIGH, AUTOBIND, 40,    0x00000000 }, // Available
+/*  5  */   {PROTO_FRSKYX, CH_16,       0,     P_HIGH, AUTOBIND, 40,    0x00000000 }, // Available
+/*  6  */   {PROTO_FRSKYX, EU_16,       0,     P_HIGH, AUTOBIND, 40,    0x00000000 }, // Available
+/*  7  */   {PROTO_DSM,    DSM2_2F,     0,     P_HIGH, AUTOBIND, 6,     0x00000000 }, // Available
+/*  8  */   {PROTO_DSM,    DSM2_1F,     0,     P_HIGH, AUTOBIND, 6,     0x00000000 }, // Available
+/*  9  */   {PROTO_DSM,    DSMX_2F,     0,     P_HIGH, AUTOBIND, 6,     0x00000000 }, // Available
+/*  10 */   {PROTO_DSM,    DSMX_1F,     0,     P_HIGH, AUTOBIND, 6,     0x00000000 }, // Available
+/*  11 */   {PROTO_DSM,    DSM2_2F,     0,     P_HIGH, AUTOBIND, 8,     0x00000000 }, // Available
+/*  12 */   {PROTO_DSM,    DSM2_1F,     0,     P_HIGH, AUTOBIND, 8,     0x00000000 }, // Available
+/*  13 */   {PROTO_DSM,    DSMX_2F,     0,     P_HIGH, AUTOBIND, 8,     0x00000000 }, // Available
+/*  14 */   {PROTO_DSM,    DSMX_1F,     0,     P_HIGH, AUTOBIND, 8,     0x00000000 }, // Available
+#endif
+};
