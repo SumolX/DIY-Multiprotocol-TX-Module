@@ -43,10 +43,17 @@
 /*************************/
 /*** PPM MODE SETTINGS ***/
 /*************************/
-#undef TX_ER9X
+#undef  TX_ER9X
 #define TX_CUSTOM
 #define PPM_MAX_100 1930
 #define PPM_MIN_100 1070
+
+#undef  BIND_CH
+#define BIND_CH 8
+#define WAIT_FOR_BIND_PPM
+
+#undef  MAX_PPM_CHANNELS
+#define MAX_PPM_CHANNELS 14
 
 #undef NBR_BANKS
 #define NBR_BANKS 1
