@@ -1248,8 +1248,14 @@ static void protocol_init()
 	}
 
 	#if defined(WAIT_FOR_BIND) && defined(ENABLE_BIND_CH)
-		if( IS_AUTOBIND_FLAG_on && IS_BIND_CH_PREV_off && (cur_protocol[1]&0x80)==0 && mode_select == MODE_SERIAL)
-		{ // Autobind is active but no bind requested by either BIND_CH or BIND. But do not wait if in PPM mode...
+		bool wait_for_bind = mode_select == MODE_SERIAL;
+
+		#if defined(WAIT_FOR_BIND_PPM)
+			wait_for_bind = true;
+		#endif
+
+		if( IS_AUTOBIND_FLAG_on && IS_BIND_CH_PREV_off && (cur_protocol[1]&0x80)==0 && wait_for_bind)
+		{ // Autobind is active but no bind requested by either BIND_CH or BIND. But do not wait if in PPM mode unless configured.
 			WAIT_BIND_on;
 			return;
 		}

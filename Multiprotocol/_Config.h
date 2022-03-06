@@ -69,6 +69,9 @@
 //The goal is to prevent binding other people's model when powering up the TX, changing model or scanning through protocols.
 #define WAIT_FOR_BIND
 
+//Uncomment to enforce wait for bind feature via PPM mode.
+//#define WAIT_FOR_BIND_PPM
+
 
 /****************/
 /*** RF CHIPS ***/
