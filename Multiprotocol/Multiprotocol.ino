@@ -1994,10 +1994,10 @@ static void __attribute__((unused)) crc8_update(uint8_t byte)
 		uint16_t Cur_TCNT1;
 
 		Cur_TCNT1 = TCNT1 - Prev_TCNT1 ;	// Capture current Timer1 value
-		if(Cur_TCNT1<1600)
+		if(Cur_TCNT1<PPM_BAD_FRAME_SIZE)
 			bad_frame=1;					// bad frame
 		else
-			if(Cur_TCNT1>4400)
+			if(Cur_TCNT1>PPM_MIN_FRAME_SIZE)
 			{  //start of frame
 				if(chan>=MIN_PPM_CHANNELS)
 				{
@@ -2010,7 +2010,7 @@ static void __attribute__((unused)) crc8_update(uint8_t byte)
 			else
 				if(bad_frame==0)			// need to wait for start of frame
 				{  //servo values between 800us and 2200us will end up here
-					PPM_data[chan]=Cur_TCNT1;
+					PPM_data[chan]=PPM_SERVO_VALUE(Cur_TCNT1);
 					if(chan++>=MAX_PPM_CHANNELS)
 						bad_frame=1;		// don't accept any new channels
 				}

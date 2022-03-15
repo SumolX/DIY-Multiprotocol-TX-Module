@@ -420,6 +420,14 @@
 // The default value is 16 to receive all possible channels but you might want to filter some "bad" channels from the PPM frame like the ones above 6 on the Walkera PL0811.
 #define MAX_PPM_CHANNELS 16
 
+/** PPM Decoding **/
+// Standard ppm pulse timing configuration which can be overriden for non-standard timings.
+#define PPM_CENTER_FREQ      1500
+#define PPM_FRAME_TOLERANCE  100
+#define PPM_BAD_FRAME_SIZE   PPM_CENTER_FREQ + PPM_FRAME_TOLERANCE
+#define PPM_MIN_FRAME_SIZE   (PPM_CENTER_FREQ * (MIN_PPM_CHANNELS - 1)) - PPM_FRAME_TOLERANCE
+#define PPM_SERVO_VALUE(val) (val)
+
 /** Telemetry **/
 //Send simple FrSkyX telemetry using the FrSkyD telemetry format
 #define TELEMETRY_FRSKYX_TO_FRSKYD
