@@ -1994,7 +1994,7 @@ static void __attribute__((unused)) crc8_update(uint8_t byte)
 		uint16_t Cur_TCNT1;
 
 		Cur_TCNT1 = TCNT1 - Prev_TCNT1 ;	// Capture current Timer1 value
-		if(Cur_TCNT1<PPM_BAD_FRAME_SIZE)
+		if(Cur_TCNT1<PPM_MIN_PULSE_SIZE)
 			bad_frame=1;					// bad frame
 		else
 			if(Cur_TCNT1>PPM_MIN_FRAME_SIZE)

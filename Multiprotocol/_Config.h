@@ -423,9 +423,9 @@
 /** PPM Decoding **/
 // Standard ppm pulse timing configuration which can be overriden for non-standard timings.
 #define PPM_CENTER_FREQ      1500
-#define PPM_FRAME_TOLERANCE  100
-#define PPM_BAD_FRAME_SIZE   PPM_CENTER_FREQ + PPM_FRAME_TOLERANCE
-#define PPM_MIN_FRAME_SIZE   (PPM_CENTER_FREQ * (MIN_PPM_CHANNELS - 1)) - PPM_FRAME_TOLERANCE
+#define PPM_PULSE_TOLERANCE  100
+#define PPM_MIN_PULSE_SIZE   PPM_CENTER_FREQ + PPM_PULSE_TOLERANCE
+#define PPM_MIN_FRAME_SIZE   (PPM_CENTER_FREQ * (MIN_PPM_CHANNELS - 1)) - PPM_PULSE_TOLERANCE
 #define PPM_SERVO_VALUE(val) (val)
 
 /** Telemetry **/
