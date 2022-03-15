@@ -14,17 +14,17 @@
 //   01 - Aileron
 //   02 - Elevator
 //   03 - Throttle
-//   02 - Rudder
+//   04 - Rudder
 //   05 - SF - Arm
 //   06 - SE - Mode
-//   07 - SA - Available
-//   08 - SB - Available
-//   09 - LS - Camera Tilt
-//   10 - SC - Available
+//   07 - SA - Turtle
+//   08 - SB - VTX Power
+//   09 - LS - Pan/Tilt
+//   10 - SC - Beeper
 //   11 - SD - Available
 //   12 - SG - Available
-//   13 - RS - Digital 1 ON Upper
-//   14 - RS - Digital 2 ON Lower
+//   13 - NA - Digital
+//   14 - NA - Digital
 
 // Telemetry settings defined below allow for direct 
 // communications with BT dongles such as HC-05 and
@@ -44,16 +44,19 @@
 /*** PPM MODE SETTINGS ***/
 /*************************/
 #undef  TX_ER9X
-#define TX_CUSTOM
-#define PPM_MAX_100 1930
-#define PPM_MIN_100 1070
+#define TX_SPEKTRUM
 
-#undef  BIND_CH
-#define BIND_CH 8
-#define WAIT_FOR_BIND_PPM
-
+// In 12ch student mode the ppm pulse duration is
+// halved (1500us = 750us) and need to rescale servo
+// values back to the standard ppm pulse durations.
 #undef  MAX_PPM_CHANNELS
-#define MAX_PPM_CHANNELS 14
+#define MAX_PPM_CHANNELS     12
+#undef  PPM_CENTER_FREQ
+#define PPM_CENTER_FREQ      750
+#undef  PPM_FRAME_TOLERANCE
+#define PPM_FRAME_TOLERANCE  50
+#undef  PPM_SERVO_VALUE
+#define PPM_SERVO_VALUE(val) (val << 1)
 
 #undef NBR_BANKS
 #define NBR_BANKS 1
@@ -64,9 +67,9 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=  {
 //******************************       BANK 1       ******************************
 //  Switch  Protocol       Sub protocol RX_Num Power   Auto Bind Option Chan Order
 /*  1  */   {PROTO_DSM,    DSM2_1F,     0,     P_HIGH, AUTOBIND, 6,     0x00000000 }, // Eflite Blade mX S300
-/*  2  */   {PROTO_FRSKYD, NONE,        0,     P_HIGH, AUTOBIND, 40,    0x00000000 }, // TinyHawk 3
-/*  3  */   {PROTO_FRSKYV, NONE,        0,     P_HIGH, AUTOBIND, 40,    0x00000000 }, // Available
-/*  4  */   {PROTO_FRSKYD, NONE,        0,     P_HIGH, AUTOBIND, 40,    0x00000000 }, // Available
+/*  2  */   {PROTO_FRSKYX, CH_16,       0,     P_HIGH, AUTOBIND, 40,    0x00000000 }, // TinyHawk 3
+/*  3  */   {PROTO_FRSKYD, NONE,        0,     P_HIGH, AUTOBIND, 40,    0x00000000 }, // Available
+/*  4  */   {PROTO_FRSKYV, NONE,        0,     P_HIGH, AUTOBIND, 40,    0x00000000 }, // Available
 /*  5  */   {PROTO_FRSKYX, CH_16,       0,     P_HIGH, AUTOBIND, 40,    0x00000000 }, // Available
 /*  6  */   {PROTO_FRSKYX, EU_16,       0,     P_HIGH, AUTOBIND, 40,    0x00000000 }, // Available
 /*  7  */   {PROTO_DSM,    DSM2_2F,     0,     P_HIGH, AUTOBIND, 6,     0x00000000 }, // Available
