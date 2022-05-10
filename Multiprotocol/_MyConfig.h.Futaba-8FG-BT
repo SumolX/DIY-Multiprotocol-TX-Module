@@ -55,8 +55,8 @@
 #define MAX_PPM_CHANNELS     12
 #undef  PPM_CENTER_FREQ
 #define PPM_CENTER_FREQ      750
-#undef  PPM_FRAME_TOLERANCE
-#define PPM_FRAME_TOLERANCE  50
+#undef  PPM_PULSE_TOLERANCE
+#define PPM_PULSE_TOLERANCE  50
 #undef  PPM_SERVO_VALUE
 #define PPM_SERVO_VALUE(val) (val << 1)
 
