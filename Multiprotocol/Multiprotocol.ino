@@ -557,11 +557,7 @@ void setup()
 	//Protocol and interrupts initialization
 	if(mode_select != MODE_SERIAL)
 	{ // PPM
-		#ifndef MY_PPM_PROT
-			const PPM_Parameters *PPM_prot_line=&PPM_prot[bank*14+mode_select-1];
-		#else
-			const PPM_Parameters *PPM_prot_line=&My_PPM_prot[bank*14+mode_select-1];
-		#endif
+		const PPM_Parameters *PPM_prot_line=&PPM_prot[bank*14+mode_select-1];
 		
 		protocol		=	PPM_prot_line->protocol;
 		cur_protocol[1] =	protocol;
@@ -1250,12 +1246,13 @@ static void protocol_init()
 	#if defined(WAIT_FOR_BIND) && defined(ENABLE_BIND_CH)
 		bool wait_for_bind = mode_select == MODE_SERIAL;
 
+		// Autobind is active but no bind requested by either BIND_CH or BIND. But do not wait if in PPM mode unless configured.
 		#if defined(WAIT_FOR_BIND_PPM)
 			wait_for_bind = true;
 		#endif
 
 		if( IS_AUTOBIND_FLAG_on && IS_BIND_CH_PREV_off && (cur_protocol[1]&0x80)==0 && wait_for_bind)
-		{ // Autobind is active but no bind requested by either BIND_CH or BIND. But do not wait if in PPM mode unless configured.
+		{
 			WAIT_BIND_on;
 			return;
 		}

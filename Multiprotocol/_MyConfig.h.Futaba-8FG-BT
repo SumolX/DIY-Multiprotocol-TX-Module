@@ -16,13 +16,13 @@
 //   03 - Throttle
 //   04 - Rudder
 //   05 - SF - Arm
-//   06 - SE - Mode
-//   07 - SA - Turtle
+//   06 - SE - Turtle/Beeper
+//   07 - SA - OSD Profile
 //   08 - SB - VTX Power
 //   09 - LS - Pan/Tilt
-//   10 - SC - Beeper
+//   10 - SC - Rate Profile
 //   11 - SD - Available
-//   12 - SG - Available
+//   12 - SG - Mode
 //   13 - NA - Digital
 //   14 - NA - Digital
 
@@ -44,7 +44,9 @@
 /*** PPM MODE SETTINGS ***/
 /*************************/
 #undef  TX_ER9X
-#define TX_SPEKTRUM
+#define TX_CUSTOM
+#define PPM_MAX_100 1950
+#define PPM_MIN_100 1090
 
 // In 12ch student mode the ppm pulse duration is
 // halved (1500us = 750us) and need to rescale servo
@@ -53,8 +55,8 @@
 #define MAX_PPM_CHANNELS     12
 #undef  PPM_CENTER_FREQ
 #define PPM_CENTER_FREQ      750
-#undef  PPM_PULSE_TOLERANCE
-#define PPM_PULSE_TOLERANCE  50
+#undef  PPM_FRAME_TOLERANCE
+#define PPM_FRAME_TOLERANCE  50
 #undef  PPM_SERVO_VALUE
 #define PPM_SERVO_VALUE(val) (val << 1)
 
