@@ -96,7 +96,7 @@ CFlie|38|CFlie||||||||NRF24L01|
 [FrskyX2](Protocols_Details.md#FRSKYX2---64)|64|CH_16|CH_8|EU_16|EU_8|Cloned|Cloned_8|||CC2500|
 [Frsky_RX](Protocols_Details.md#FRSKY_RX---55)|55|Multi|CloneTX|EraseTX|CPPM|||||CC2500|
 [Futaba/SFHSS](Protocols_Details.md#Futaba---21)|21|SFHSS||||||||CC2500|
-[FX816](Protocols_Details.md#FX816---58)|28|FX816||||||||NRF24L01|
+[FX](Protocols_Details.md#FX---58)|28|816|620|||||||NRF24L01|
 [FY326](Protocols_Details.md#FY326---20)|20|FY326|FY319|||||||NRF24L01|
 [GD00X](Protocols_Details.md#GD00X---47)|47|GD_V1*|GD_V2*|||||||NRF24L01|XN297L
 [GW008](Protocols_Details.md#GW008---32)|32|||||||||NRF24L01|XN297
@@ -113,6 +113,7 @@ CFlie|38|CFlie||||||||NRF24L01|
 [KF606](Protocols_Details.md#KF606---49)|49|KF606|MIG320|||||||NRF24L01|XN297
 [KN](Protocols_Details.md#KN---9)|9|WLTOYS|FEILUN|||||||NRF24L01|
 [Kyosho](Protocols_Details.md#Kyosho---73)|73|FHSS|Hype|||||||A7105|
+[Kyosho2](Protocols_Details.md#Kyosho2---93)|93|KT-17||||||||NRF24L01|
 [LOLI](Protocols_Details.md#LOLI---82)|82|||||||||NRF24L01|
 [Losi](Protocols_Details.md#Losi---89)|89|||||||||CYRF6936|
 [MJXq](Protocols_Details.md#MJXQ---18)|18|WLH08|X600|X800|H26D|E010*|H26WH|PHOENIX*||NRF24L01|XN297
@@ -1600,14 +1601,20 @@ A|E|T|R|FMODE|AUX6|AUX7
 
 FMODE and AUX7 have 4 positions: -100%..-50%=>0, -50%..5%=>1, 5%..50%=>2, 50%..100%=>3
 
-## FX816 - *58*
-Model: FEI XIONG FX P38, B17
-
-Only 8 TX IDs available
+## FX - *58*
+FEI XIONG
 
 CH1|CH2|CH3|CH4
 ---|---|---|---
 A|-|T|-
+
+### Sub_protocol 816 - *0*
+Model: FX816 P38, B17
+
+Only 8 TX IDs available
+
+### Sub_protocol 620 - *1*
+Model: FX620 SU35
 
 ## FY326 - *20*
 
@@ -1724,6 +1731,13 @@ Model: JJRC345
 Model: DF-Models SkyTumbler
 
 RTH not supported
+
+## KYOSHO2 - *93*
+Model: TX KT-17, Minium Edge 540, Minium Citabria
+
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10
+---|---|---|---|---|---|---|---|---|----
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10
 
 ## LOLI - *82*
 LOLI3 receivers: https://github.com/wooddoor/Loli3
