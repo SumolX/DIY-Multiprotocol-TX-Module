@@ -1059,7 +1059,7 @@ void TelemetryUpdate()
 					USARTC0.CTRLC = 0x03 ;
 				#else
 					#ifdef STM32_BOARD
-						usart3_begin(9600,SERIAL_8N1);		//USART3 
+						usart3_begin(STM32_TELEMETRY_SERIAL_PARAMS(9600,SERIAL_8N1));		//USART3 
 					#else
 						UBRR0H = 0x00;
 						UBRR0L = 0x67;
@@ -1079,7 +1079,7 @@ void TelemetryUpdate()
 					USARTC0.CTRLC = 0x03 ;*/
 				#else
 					#ifdef STM32_BOARD
-						usart3_begin(57600,SERIAL_8N1);		//USART3 
+						usart3_begin(STM32_TELEMETRY_SERIAL_PARAMS(57600,SERIAL_8N1));		//USART3 
 					#else
 						UBRR0H = 0x00;
 						UBRR0L = 0x22;
@@ -1099,7 +1099,7 @@ void TelemetryUpdate()
 					USARTC0.CTRLC = 0x03 ;*/
 				#else
 					#ifdef STM32_BOARD
-						usart3_begin(125000,SERIAL_8N1);	//USART3 
+						usart3_begin(STM32_TELEMETRY_SERIAL_PARAMS(125000,SERIAL_8N1));	//USART3 
 					#else
 						UBRR0H = 0x00;
 						UBRR0L = 0x07;

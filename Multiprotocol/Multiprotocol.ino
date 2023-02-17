@@ -37,11 +37,6 @@
 //Multiprotocol module configuration file
 #include "_Config.h"
 
-//Personal config file
-#if defined(USE_MY_CONFIG)
-#include "_MyConfig.h"
-#endif
-
 #include "Pins.h"
 #include "TX_Def.h"
 #include "Validate.h"
@@ -562,11 +557,7 @@ void setup()
 	//Protocol and interrupts initialization
 	if(mode_select != MODE_SERIAL)
 	{ // PPM
-		#ifndef MY_PPM_PROT
-			const PPM_Parameters *PPM_prot_line=&PPM_prot[bank*14+mode_select-1];
-		#else
-			const PPM_Parameters *PPM_prot_line=&My_PPM_prot[bank*14+mode_select-1];
-		#endif
+		const PPM_Parameters *PPM_prot_line=&PPM_prot[bank*14+mode_select-1];
 		
 		protocol		=	PPM_prot_line->protocol;
 		cur_protocol[1] =	protocol;
@@ -1253,8 +1244,15 @@ static void protocol_init()
 	}
 
 	#if defined(WAIT_FOR_BIND) && defined(ENABLE_BIND_CH)
-		if( IS_AUTOBIND_FLAG_on && IS_BIND_CH_PREV_off && (cur_protocol[1]&0x80)==0 && mode_select == MODE_SERIAL)
-		{ // Autobind is active but no bind requested by either BIND_CH or BIND. But do not wait if in PPM mode...
+		bool wait_for_bind = mode_select == MODE_SERIAL;
+
+		// Autobind is active but no bind requested by either BIND_CH or BIND. But do not wait if in PPM mode unless configured.
+		#if defined(WAIT_FOR_BIND_PPM)
+			wait_for_bind = true;
+		#endif
+
+		if( IS_AUTOBIND_FLAG_on && IS_BIND_CH_PREV_off && (cur_protocol[1]&0x80)==0 && wait_for_bind)
+		{
 			WAIT_BIND_on;
 			return;
 		}
@@ -1993,10 +1991,10 @@ static void __attribute__((unused)) crc8_update(uint8_t byte)
 		uint16_t Cur_TCNT1;
 
 		Cur_TCNT1 = TCNT1 - Prev_TCNT1 ;	// Capture current Timer1 value
-		if(Cur_TCNT1<1600)
+		if(Cur_TCNT1<PPM_MIN_PULSE_SIZE)
 			bad_frame=1;					// bad frame
 		else
-			if(Cur_TCNT1>4400)
+			if(Cur_TCNT1>PPM_MIN_FRAME_SIZE)
 			{  //start of frame
 				if(chan>=MIN_PPM_CHANNELS)
 				{
@@ -2009,7 +2007,7 @@ static void __attribute__((unused)) crc8_update(uint8_t byte)
 			else
 				if(bad_frame==0)			// need to wait for start of frame
 				{  //servo values between 800us and 2200us will end up here
-					PPM_data[chan]=Cur_TCNT1;
+					PPM_data[chan]=PPM_SERVO_VALUE(Cur_TCNT1);
 					if(chan++>=MAX_PPM_CHANNELS)
 						bad_frame=1;		// don't accept any new channels
 				}

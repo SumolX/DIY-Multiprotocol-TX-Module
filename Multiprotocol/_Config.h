@@ -17,6 +17,10 @@
 /** Multiprotocol module configuration file ***/
 /**********************************************/
 
+/**********************************************/
+/**      STATIC CONFIGURATION BEGIN         ***/
+/**********************************************/
+
 /********************/
 /*** LOCAL CONFIG ***/
 /********************/
@@ -64,6 +68,9 @@
 // the selected protocol unless a bind is requested using bind from channel or the GUI "Bind" button.
 //The goal is to prevent binding other people's model when powering up the TX, changing model or scanning through protocols.
 #define WAIT_FOR_BIND
+
+//Uncomment to enforce wait for bind feature via PPM mode.
+//#define WAIT_FOR_BIND_PPM
 
 
 /****************/
@@ -308,6 +315,9 @@
 //If you do not plan using the telemetry comment this global setting using "//" and skip to the next section.
 #define TELEMETRY
 
+//Uncomment to override STM32 telemetry serial baudrate and parity for all protocols.
+//#define STM32_TELEMETRY_FORCED_SERIAL_PARAMS 115200,SERIAL_8N1
+
 //Comment to invert the polarity of the output telemetry serial signal.
 //This function takes quite some flash space and processor power on an atmega.
 //For a Taranis/T16 with an external module it must be uncommented. For a T16 internal module it must be commented.
@@ -411,15 +421,19 @@
 // The default value is 16 to receive all possible channels but you might want to filter some "bad" channels from the PPM frame like the ones above 6 on the Walkera PL0811.
 #define MAX_PPM_CHANNELS 16
 
+/** PPM Decoding **/
+// Standard ppm pulse timing configuration which can be overriden for non-standard timings.
+#define PPM_CENTER_FREQ      1500
+#define PPM_PULSE_TOLERANCE  100
+#define PPM_MIN_PULSE_SIZE   PPM_CENTER_FREQ + PPM_PULSE_TOLERANCE
+#define PPM_MIN_FRAME_SIZE   (PPM_CENTER_FREQ * (MIN_PPM_CHANNELS - 1)) - PPM_PULSE_TOLERANCE
+#define PPM_SERVO_VALUE(val) (val)
+
 /** Telemetry **/
 //Send simple FrSkyX telemetry using the FrSkyD telemetry format
 #define TELEMETRY_FRSKYX_TO_FRSKYD
 
 /** Rotary Switch Protocol Selector Settings **/
-//The table below indicates which protocol to run when a specific position on the rotary switch has been selected.
-//All fields and values are explained below. Everything is configurable from here like in the Serial mode.
-//Tip: You can associate multiple times the same protocol to different rotary switch positions to take advantage of the model match based on RX_Num
-
 //A system of banks enable the access to more protocols than positions on the rotary switch. Banks can be selected by placing the rotary switch on position 15, power up the module and
 // short press the bind button multiple times until you reach the desired one. The bank number currently selected is indicated by the number of LED flash.
 // Full procedure is located here: https://github.com/pascallanger/DIY-Multiprotocol-TX-Module/blob/master/Protocols_Details.md#protocol-selection-in-ppm-mode
@@ -427,6 +441,69 @@
 //The parameter below indicates the number of desired banks between 1 and 5. Default is 1.
 #define NBR_BANKS 1
 
+/**********************************/
+/*** DIRECT INPUTS SETTINGS ***/
+/**********************************/
+//In this section you can configure the direct inputs.
+//It enables switches wired directly to the board
+//Direct inputs works only in ppm mode and only for stm_32 boards
+//Uncomment following lines to enable derect inputs or define your own configuration in _MyConfig.h
+/*
+#define ENABLE_DIRECT_INPUTS
+		
+#define DI1_PIN				PC13	
+#define IS_DI1_on			(digitalRead(DI1_PIN)==LOW)
+
+#define DI2_PIN				PC14	
+#define IS_DI2_on			(digitalRead(DI2_PIN)==LOW)
+
+#define DI3_PIN				PC15	
+#define IS_DI3_on			(digitalRead(DI3_PIN)==LOW)
+
+//Define up to 4 direct input channels
+//CHANNEL1 - 2pos switch
+#define DI_CH1_read			IS_DI1_on ? PPM_MAX_100*2 : PPM_MIN_100*2
+//CHANNEL2 - 3pos switch
+#define DI_CH2_read			IS_DI2_on ? PPM_MAX_100*2 : (IS_DI2_on ? PPM_MAX_100 + PPM_MIN_100 : PPM_MIN_100*2)
+*/
+
+/**********************************************/
+/**      STATIC CONFIGURATION END           ***/
+/**********************************************/
+
+/**********************************************/
+/**      OVERRIDE CONFIGURATION FILE        ***/
+/**********************************************/
+
+#if defined(USE_MY_CONFIG)
+#include "_MyConfig.h"
+#endif
+
+/**********************************************/
+/**      DYNAMIC CONFIGURATION BEGIN        ***/
+/**********************************************/
+
+/**************************/
+/*** TELEMETRY SETTINGS ***/
+/**************************/
+
+//Determines which baudrates to apply (original or overridden)
+#if defined(STM32_TELEMETRY_FORCED_SERIAL_PARAMS)
+    #define STM32_TELEMETRY_SERIAL_PARAMS(baud,parity) STM32_TELEMETRY_FORCED_SERIAL_PARAMS
+#else
+    #define STM32_TELEMETRY_SERIAL_PARAMS(baud,parity) baud,parity
+#endif
+
+/*************************/
+/*** PPM MODE SETTINGS ***/
+/*************************/
+
+/** Rotary Switch Protocol Selector Settings **/
+//The table below indicates which protocol to run when a specific position on the rotary switch has been selected.
+//All fields and values are explained below. Everything is configurable from here like in the Serial mode.
+//Tip: You can associate multiple times the same protocol to different rotary switch positions to take advantage of the model match based on RX_Num
+
+#ifndef PPM_PARAMETER_OVERRIDE
 const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 #if NBR_BANKS > 0
 //******************************       BANK 1       ******************************
@@ -519,6 +596,7 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 /*	14	*/	{PROTO_MT99XX,	MT99		,	0	,	P_HIGH	,	NO_AUTOBIND	,	0	,	0x00000000 },
 #endif
 };
+#endif
 // RX_Num is used for TX & RX match. Using different RX_Num values for each receiver will prevent starting a model with the false config loaded...
 // RX_Num value is between 0 and 15.
 
@@ -842,28 +920,7 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 		NONE
 */
 
-/**********************************/
-/*** DIRECT INPUTS SETTINGS ***/
-/**********************************/
-//In this section you can configure the direct inputs.
-//It enables switches wired directly to the board
-//Direct inputs works only in ppm mode and only for stm_32 boards
-//Uncomment following lines to enable derect inputs or define your own configuration in _MyConfig.h
-/*
-#define ENABLE_DIRECT_INPUTS
-		
-#define DI1_PIN				PC13	
-#define IS_DI1_on			(digitalRead(DI1_PIN)==LOW)
+/**********************************************/
+/**      DYNAMIC CONFIGURATION END          ***/
+/**********************************************/
 
-#define DI2_PIN				PC14	
-#define IS_DI2_on			(digitalRead(DI2_PIN)==LOW)
-
-#define DI3_PIN				PC15	
-#define IS_DI3_on			(digitalRead(DI3_PIN)==LOW)
-
-//Define up to 4 direct input channels
-//CHANNEL1 - 2pos switch
-#define DI_CH1_read			IS_DI1_on ? PPM_MAX_100*2 : PPM_MIN_100*2
-//CHANNEL2 - 3pos switch
-#define DI_CH2_read			IS_DI2_on ? PPM_MAX_100*2 : (IS_DI2_on ? PPM_MAX_100 + PPM_MIN_100 : PPM_MIN_100*2)
-*/
