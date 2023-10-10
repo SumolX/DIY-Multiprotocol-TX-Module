@@ -105,6 +105,7 @@ const char STR_CONFIG[]     ="Config";
 const char STR_LOSI[]       ="Losi";
 const char STR_MOULDKG[]    ="MouldKg";
 const char STR_XERALL[]     ="Xerall";
+const char STR_SCORPIO[]    ="Scorpio";
 
 const char STR_SUBTYPE_FLYSKY[] =     "\x04""Std\0""V9x9""V6x6""V912""CX20";
 const char STR_SUBTYPE_HUBSAN[] =     "\x04""H107""H301""H501";
@@ -178,12 +179,16 @@ const char STR_SUBTYPE_FX[] =         "\x04""816\0""620\0""9630";
 
 #ifdef SEND_CPPM
 	const char STR_SUB_FRSKY_RX[] =   "\x07""Multi\0 ""CloneTX""EraseTX""CPPM\0  ";
+	const char STR_SUB_DSM_RX[] =   "\x07""Multi\0 ""CloneTX""EraseTX""CPPM\0  ";
 	#define FRCPPM   4
+	#define DSMCPPM   4
 	const char STR_CPPM[] =           "\x05""Multi""CPPM\0";
 	#define NBR_CPPM 2
 #else
 	const char STR_SUB_FRSKY_RX[] =   "\x07""Multi\0 ""CloneTX""EraseTX";
+	const char STR_SUB_DSM_RX[] =   "\x07""Multi\0 ""CloneTX""EraseTX";
 	#define FRCPPM   3
+	#define DSMCPPM   3
 	#define STR_CPPM NO_SUBTYPE
 	#define NBR_CPPM 0
 #endif
@@ -248,7 +253,7 @@ const mm_protocol_definition multi_protocols[] = {
 		{PROTO_DSM,        STR_DSM,       STR_SUBTYPE_DSM,       6, OPTION_MAXTHR,  0, 1, SW_CYRF,   DSM_init,        DSM_callback        },
 	#endif
 	#if defined(DSM_RX_CYRF6936_INO)
-		{PROTO_DSM_RX,     STR_DSM_RX,    STR_CPPM,       NBR_CPPM, OPTION_NONE,    0, 1, SW_CYRF,   DSM_RX_init,     DSM_RX_callback     },
+		{PROTO_DSM_RX,     STR_DSM_RX,    STR_SUB_DSM_RX,  DSMCPPM, OPTION_NONE,    0, 1, SW_CYRF,   DSM_RX_init,     DSM_RX_callback     },
 	#endif
 	#if defined(E010R5_CYRF6936_INO)
 		{PROTO_E010R5,     STR_E010R5,    NO_SUBTYPE,            0, OPTION_NONE,    0, 0, SW_CYRF,   E010R5_init,     E010R5_callback     },
@@ -427,6 +432,9 @@ const mm_protocol_definition multi_protocols[] = {
 	#endif
 	#if defined(SCANNER_CC2500_INO)
 		{PROTO_SCANNER,    STR_SCANNER,   NO_SUBTYPE,            0, OPTION_NONE,    0, 0, SW_CC2500, SCANNER_init,    SCANNER_callback    },
+	#endif
+	#if defined(SCORPIO_CYRF6936_INO)
+		{PROTO_SCORPIO,    STR_SCORPIO,   NO_SUBTYPE,            0, OPTION_NONE,    0, 0, SW_CYRF,   SCORPIO_init,    SCORPIO_callback    },
 	#endif
 	#if defined(SHENQI_NRF24L01_INO)
 		{PROTO_SHENQI,     STR_SHENQI,    NO_SUBTYPE,            0, OPTION_NONE,    0, 0, SW_NRF,    SHENQI_init,     SHENQI_callback     },

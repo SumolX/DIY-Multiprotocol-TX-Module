@@ -195,11 +195,12 @@
 #define	DSM_CYRF6936_INO
 #define	DSM_RX_CYRF6936_INO
 #define	E010R5_CYRF6936_INO
-#define	E01X_CYRF6936_INO
+//#define	E01X_CYRF6936_INO
 #define	E129_CYRF6936_INO
 #define	J6PRO_CYRF6936_INO
-#define	LOSI_CYRF6936_INO
+//#define	LOSI_CYRF6936_INO
 #define	MLINK_CYRF6936_INO
+#define	SCORPIO_CYRF6936_INO
 #define	TRAXXAS_CYRF6936_INO
 #define	WFLY_CYRF6936_INO
 #define	WK2x01_CYRF6936_INO
@@ -346,6 +347,7 @@
 #define HUBSAN_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
 #define NCC1701_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
 #define OMP_HUB_TELEMETRY			// Use FrSkyD Hub format to send telemetry to TX
+#define V761_HUB_TELEMETRY			// Use FrSkyD Hub format to send telemetry to TX
 #define PROPEL_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
 #define CABELL_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
 #define RLINK_HUB_TELEMETRY			// Use FrSkyD Hub format to send telemetry to TX
@@ -680,7 +682,9 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 		DSMX_2F
 		DSMR
 	PROTO_DSM_RX
-		NONE
+		DSM_RX
+		DSM_CLONE
+  		DSM_ERASE
 	PROTO_E010R5
 		NONE
 	PROTO_E016H
@@ -745,6 +749,8 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 	PROTO_FRSKY_RX
 		FRSKY_RX
 		FRSKY_CLONE
+	PROTO_FUTABA
+		NONE
 	PROTO_FX
 		FX816
 		FX620
@@ -867,7 +873,7 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 		RLINK_DUMBORC
 	PROTO_SCANNER
 		NONE
-	PROTO_FUTABA
+	PROTO_SCORPIO
 		NONE
 	PROTO_SHENQI
 		NONE

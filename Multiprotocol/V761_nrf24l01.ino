@@ -22,17 +22,24 @@ Multiprotocol is distributed in the hope that it will be useful,
 #define V761_PACKET_PERIOD		7060 // Timeout for callback in uSec
 #define V761_INITIAL_WAIT		500
 #define V761_PACKET_SIZE		8
+#define V761_RXPAYLOAD_SIZE		3
 #define V761_BIND_COUNT			200
 #define V761_BIND_FREQ			0x28
 #define V761_RF_NUM_CHANNELS	3
 #define TOPRC_BIND_FREQ			0x2A
 #define TOPRC_PACKET_PERIOD		14120 // Timeout for callback in uSec
 
+#define V761_WRITE_TIME			450
+#define V761_TELEM_PACKET_PERIOD	14088 // Timeout for callback in uSec
+//#define V761_TELEM_DEBUG
+
 enum 
 {
-    V761_BIND1 = 0,
-    V761_BIND2,
-    V761_DATA
+	V761_BIND1 = 0,
+	V761_BIND2,
+	V761_RX_CHECK,
+	V761_DATA,
+	V761_RX
 };
 
 static void __attribute__((unused)) V761_set_checksum()
@@ -66,12 +73,16 @@ static void __attribute__((unused)) V761_send_packet()
 	}
 	else
 	{ 
+		#ifdef V761_TELEM_DEBUG
+			debug_time("");
+			debugln(" Ph:%d",hopping_frequency_no);
+		#endif
 		XN297_Hopping(hopping_frequency_no++);
 		if(hopping_frequency_no >= V761_RF_NUM_CHANNELS)
 		{
 			hopping_frequency_no = 0;
-			packet_count++;
-			packet_count &= 0x03;
+			packet_sent++;
+			packet_sent &= 0x03;
 		}
 
 		packet[0] = convert_channel_8b(THROTTLE);		// Throttle
@@ -88,7 +99,7 @@ static void __attribute__((unused)) V761_send_packet()
 			packet[3] = convert_channel_8b(AILERON)>>1;	// Aileron
 		}
 
-		packet[5] = packet_count<<6;					// 0X, 4X, 8X, CX
+		packet[5] = packet_sent<<6;						// 0X, 4X, 8X, CX
 		packet[4] = 0x20;								// Trims 00..20..40, 0X->20 4X->TrAil 8X->TrEle CX->TrRud
 
 		if(CH5_SW)										// Mode Expert Gyro off
@@ -180,46 +191,129 @@ static void __attribute__((unused)) V761_initialize_txid()
 
 uint16_t V761_callback()
 {
+	static bool rx = false;
+	static uint8_t packet_telem = 0;
+
 	switch(phase)
 	{
 		case V761_BIND1:
 			if(bind_counter) 
 				bind_counter--;
-			packet_count ++;
+			packet_sent ++;
 			XN297_RFChannel(sub_protocol == V761_TOPRC ? TOPRC_BIND_FREQ : V761_BIND_FREQ);
 			XN297_SetTXAddr(rx_id, 4);
 			V761_send_packet();
-			if(packet_count >= 20) 
+			if(packet_sent >= 20) 
 			{
-				packet_count = 0;
+				packet_sent = 0;
 				phase = V761_BIND2;
 			}
 			return 15730;
 		case V761_BIND2:
 			if(bind_counter) 
 				bind_counter--;
-			packet_count ++;
+			packet_sent ++;
 			XN297_Hopping(0);
 			XN297_SetTXAddr(rx_tx_addr, 4);
 			V761_send_packet();
 			if(bind_counter == 0) 
 			{
-				packet_count = 0;
+				packet_sent = 0;
 				BIND_DONE;
 				phase = V761_DATA;
+				#ifdef V761_HUB_TELEMETRY
+					XN297_SetRXAddr(rx_tx_addr, V761_RXPAYLOAD_SIZE);
+				#endif
 			}
-			else if(packet_count >= 20) 
+			else if(packet_sent >= 20) 
 			{
-				packet_count = 0;
+				packet_sent = 0;
 				phase = V761_BIND1;
 			}
 			return 15730;
+	#ifdef V761_HUB_TELEMETRY
+		case V761_RX_CHECK:
+			rx = XN297_IsRX();					// Needed for the NRF24L01 since otherwise the bit gets cleared
+			XN297_SetTxRxMode(TXRX_OFF);
+			if(packet_count > 4*63)				// Around 3.5sec with no telemetry
+			{
+				telemetry_lost = 1;
+				packet_period = V761_PACKET_PERIOD;
+			}
+			else
+			{
+				packet_count++;
+				if(!telemetry_lost && !rx && (packet_count%64) == 0)
+				{// Should have received a telem packet but... Send telem to the radio to keep it alive
+					telemetry_link = 1;
+					#ifdef V761_TELEM_DEBUG
+						debugln("Miss");
+					#endif
+				}
+			}
+			phase++;
+	#endif
 		case V761_DATA:
 			#ifdef MULTI_SYNC
 				telemetry_set_input_sync(packet_period);
 			#endif
 			V761_send_packet();
+	#ifdef V761_HUB_TELEMETRY
+			if(sub_protocol == V761_TOPRC)
+				break;
+			if(rx)
+			{ // Check if a packet has been received
+				#ifdef V761_TELEM_DEBUG
+					debug("RX ");
+				#endif
+				if(XN297_ReadPayload(packet_in, V761_RXPAYLOAD_SIZE))
+				{ // packet with good CRC and length
+					#ifdef V761_TELEM_DEBUG
+						debug("OK:");
+						for(uint8_t i=0;i<V761_RXPAYLOAD_SIZE;i++)
+							debug(" %02X",packet_in[i]);
+						debug(" pps:%d", packet_count);
+					#endif
+					// packet_in[] = AA 00 55 -> battery ok
+					// packet_in[] = 55 00 AA -> low battery
+					crc8 = 0;
+					for(uint8_t i=0;i<V761_RXPAYLOAD_SIZE;i++)
+						crc8 ^= packet_in[i];
+					if(crc8 == 0xFF)
+					{
+						v_lipo1 = packet_in[0] >> 1;
+						telemetry_link = 1;
+						telemetry_lost = 0;
+						packet_count = 0;
+						packet_period = V761_TELEM_PACKET_PERIOD;
+					}
+					#ifdef V761_TELEM_DEBUG
+					else // Bad packet
+						debug(" NOK");
+					#endif
+				}
+				#ifdef V761_TELEM_DEBUG
+				else // Bad packet
+					debug("NOK");
+				debugln("");
+				#endif
+				rx = false;
+			}
+			phase++;
+			return V761_WRITE_TIME;
+		case V761_RX:
+			{ // Wait for packet to be sent before switching to receive mode
+				uint16_t start=(uint16_t)micros();
+				while ((uint16_t)((uint16_t)micros()-(uint16_t)start) < 500)
+					if(XN297_IsPacketSent())
+						break;
+			}
+			XN297_SetTxRxMode(RX_EN);
+			phase = V761_RX_CHECK;
+			return packet_period - V761_WRITE_TIME;
+	#else
 			break;
+	#endif
 	}
 	return packet_period;
 }
@@ -227,6 +321,7 @@ uint16_t V761_callback()
 void V761_init(void)
 {
 	V761_initialize_txid();
+	V761_RF_init();
 	if(sub_protocol == V761_TOPRC)
 	{
 		memcpy(rx_id,(uint8_t*)"\x20\x21\x05\x0A",4);
@@ -246,12 +341,19 @@ void V761_init(void)
 	else
 	{
 		XN297_SetTXAddr(rx_tx_addr, 4);
+		#ifdef V761_HUB_TELEMETRY
+			XN297_SetRXAddr(rx_tx_addr, V761_RXPAYLOAD_SIZE);
+		#endif
 		phase = V761_DATA;
 	}
 
-	V761_RF_init();
 	hopping_frequency_no = 0;
-	packet_count = 0;
+	packet_sent = 0;
+	#ifdef V761_HUB_TELEMETRY
+		packet_count = 0;
+		telemetry_lost = 1;
+		RX_RSSI = 100;		// Dummy value
+	#endif
 }
 
 #endif

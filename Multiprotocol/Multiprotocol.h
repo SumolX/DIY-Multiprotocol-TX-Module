@@ -19,7 +19,7 @@
 #define VERSION_MAJOR		1
 #define VERSION_MINOR		3
 #define VERSION_REVISION	3
-#define VERSION_PATCH_LEVEL	25
+#define VERSION_PATCH_LEVEL	33
 
 #define MODE_SERIAL 0
 
@@ -121,7 +121,8 @@ enum PROTOCOLS
 	PROTO_XERALL	= 91,	// =>NRF24L01
 	PROTO_MT99XX2	= 92,	// =>NRF24L01, extension of MT99XX protocol
 	PROTO_KYOSHO2	= 93,	// =>NRF24L01
-
+	PROTO_SCORPIO	= 94,	// =>CYRF6936
+	
 	PROTO_NANORF	= 126,	// =>NRF24L01
 	PROTO_TEST		= 127,	// =>CC2500
 };
@@ -168,6 +169,12 @@ enum DSM
 	DSMX_2F		= 3,
 	DSM_AUTO	= 4,
 	DSMR		= 5,
+};
+enum DSM_RX
+{
+	DSM_RX		= 0,
+	DSM_CLONE	= 1,
+	DSM_ERASE	= 2,
 };
 enum YD717
 {       			
@@ -822,7 +829,8 @@ enum {
 #define FRSKYX2_CLONE_EEPROM_OFFSET	873	// (1) format + (3) TX ID, 4 bytes, end is 877
 #define DSM_RX_EEPROM_OFFSET	877		// (4) TX ID + format, 5 bytes, end is 882
 #define MOULDKG_EEPROM_OFFSET	882		// RX ID, 3 bytes per model, end is 882+64*3=1074
-//#define CONFIG_EEPROM_OFFSET 	1074	// Current configuration of the multimodule
+#define DSM_CLONE_EEPROM_OFFSET 1074	// (4) TX ID, (1) Initialized, end is 1079
+//#define CONFIG_EEPROM_OFFSET 	1079	// Current configuration of the multimodule
 
 /* STM32 Flash Size */
 #ifndef DISABLE_FLASH_SIZE_CHECK
@@ -961,6 +969,10 @@ Serial: 100000 Baud 8e2      _ xxxx xxxx p --
 			DSMX_1F 	2
 			DSMX_2F 	3
 			DSM_AUTO	4
+		sub_protocol==DSM_RX
+			DSM_RX		0
+			DSM_CLONE	1
+			DSM_ERASE	2
 		sub_protocol==YD717
 			YD717		0
 			SKYWLKR		1

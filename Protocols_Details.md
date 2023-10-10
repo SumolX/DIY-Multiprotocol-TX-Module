@@ -96,7 +96,7 @@ CFlie|38|CFlie||||||||NRF24L01|
 [FrskyX2](Protocols_Details.md#FRSKYX2---64)|64|CH_16|CH_8|EU_16|EU_8|Cloned|Cloned_8|||CC2500|
 [Frsky_RX](Protocols_Details.md#FRSKY_RX---55)|55|Multi|CloneTX|EraseTX|CPPM|||||CC2500|
 [Futaba/SFHSS](Protocols_Details.md#Futaba---21)|21|SFHSS||||||||CC2500|
-[FX](Protocols_Details.md#FX---58)|28|816|620|||||||NRF24L01|
+[FX](Protocols_Details.md#FX---58)|28|816|620|9630||||||NRF24L01|
 [FY326](Protocols_Details.md#FY326---20)|20|FY326|FY319|||||||NRF24L01|
 [GD00X](Protocols_Details.md#GD00X---47)|47|GD_V1*|GD_V2*|||||||NRF24L01|XN297L
 [GW008](Protocols_Details.md#GW008---32)|32|||||||||NRF24L01|XN297
@@ -134,6 +134,7 @@ CFlie|38|CFlie||||||||NRF24L01|
 [Realacc](Protocols_Details.md#Realacc---76)|76|R11||||||||NRF24L01|
 [Redpine](Protocols_Details.md#Redpine---50)|50|FAST|SLOW|||||||NRF24L01|XN297
 [Scanner](Protocols_Details.md#Scanner---54)|54|||||||||CC2500|
+[Scorpio](Protocols_Details.md#Scorpio---94)|94|||||||||CYRF6936|
 [Shenqi](Protocols_Details.md#Shenqi---19)|19|Shenqi||||||||NRF24L01|LT8900
 [Skyartec](Protocols_Details.md#Skyartec---68)|68|||||||||CC2500|CC2500
 [SLT](Protocols_Details.md#SLT---11)|11|SLT_V1|SLT_V2|Q100|Q200|MR100||||NRF24L01|CC2500
@@ -650,6 +651,13 @@ Telemetry: the 2 RXs I have are sending different information in different forma
 CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10|CH11|CH12|CH13|CH14|CH15|CH16
 ---|---|---|---|---|---|---|---|---|----|----|----|----|----|----|----
 CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10|CH11|CH12|CH13|CH14|CH15|CH16
+
+## Scorpio - *94*
+Model Scorpio Falco 300, TX:Nine Eagles 4CH-TX, RX:Nine Eagles 4CH-RX
+
+CH1|CH2|CH3|CH4
+---|---|---|---
+A|E|T|R
 
 ## Traxxas - *43*
 Receiver 6519
@@ -1174,6 +1182,14 @@ CH1|CH2|CH3|CH4|CH5|CH6
 ---|---|---|---|---|---
 A|E|T|R|6G3D|Light
 
+Model: KFPLAN Z61 BF109
+
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9
+---|---|---|---|---|---|---|---|---
+A|E|T|R|-|Rate|Light|Unk1|Unk2
+
+Unk1&2: long press right/left
+
 ## MT99XX2 - *92*
 
 ### Sub_protocol PA18 - *92*
@@ -1630,6 +1646,17 @@ Only 8 TX IDs available
 ### Sub_protocol 620 - *1*
 Model: FX620 SU35
 
+### Sub_protocol 9630 - *2*
+Model: FX9630 and QIDI-550
+
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9
+---|---|---|---|---|---|---|---|---
+A|E|T|R|RATE|GYRO|TrimR|TrimA|TrimE
+
+FX9630 Gyro: -100%=6G small throw, 0%=6G large throw, +100%=3D
+
+QIDI-550 Gyro: -100%=3D, 0%=6G, +100%=Torque
+
 ## FY326 - *20*
 
 ### Sub_protocol FY326 - *0*
@@ -1973,6 +2000,8 @@ CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9
 
 ### Sub_protocol 4CH - *1*
 Models: Volantex V761-4+ and Eachine P51-D, F4U, F22 and may be others
+
+If the model (761-11 and above) sends telemetry then the battery status ok/empty is in A1 (4.4V -> 2.2V) and RSSI gets a dummy value of 100.
 
 CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9
 ---|---|---|---|---|---|---|---|---
