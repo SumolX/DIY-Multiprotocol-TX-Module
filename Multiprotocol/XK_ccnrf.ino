@@ -29,11 +29,18 @@ Multiprotocol is distributed in the hope that it will be useful,
 
 static uint16_t __attribute__((unused)) XK_convert_channel(uint8_t num)
 {
-	// Introduce deadband on all channels to prevent twitching
-	//debug("val:%d",val);
-	uint16_t val=convert_channel_8b_limit_deadband(num,0x00,0x80, 0xFF, 40)<<2;
-	//debugln(",%d",val);
-
+	uint16_t val;
+	
+	if(sub_protocol != XK_CARS)
+	{
+		// Introduce deadband on all channels to prevent twitching
+		//debug("val:%d",val);
+		val=convert_channel_8b_limit_deadband(num,0x00,0x80, 0xFF, 40)<<2;
+		//debugln(",%d",val);
+	}
+	else
+		val=convert_channel_16b_limit(num,0x00,0x3FF);
+	
 	// 1FF..01=left, 00=center, 200..3FF=right
 	if(val==0x200)
 		val=0;									// 0
@@ -89,12 +96,14 @@ static void __attribute__((unused)) XK_send_packet()
 				packet[10] = 0x04; 				// 6G-Mode
 		//0x00 default M-Mode
 		
-		packet[10] |= GET_FLAG(CH7_SW,0x80);	// Emergency stop momentary switch
+		packet[10] |= GET_FLAG(CH7_SW ,0x80);	// Emergency stop momentary switch
 
-		packet[11]  = GET_FLAG(CH8_SW,0x03)		// 3D/6G momentary switch
-					 |GET_FLAG(CH6_SW,0x40);	// Take off momentary switch
-		packet[14]  = GET_FLAG(CH9_SW,0x01)		// Photo momentary switch
-					 |GET_FLAG(CH10_SW,0x2);	// Video momentary switch
+		packet[11]  = GET_FLAG(CH8_SW ,0x03)	// 3D/6G momentary switch
+					 |GET_FLAG(CH6_SW ,0x40);	// Take off momentary switch
+		packet[14]  = GET_FLAG(CH9_SW ,0x01)	// Photo momentary switch
+					 |GET_FLAG(CH10_SW,0x02)	// Video momentary switch
+					 |GET_FLAG(CH11_SW,0x04)	// Flip
+					 |GET_FLAG(CH12_SW,0x10);	// Light
 		//debugln("P1:%02X,P12:%02X",packet[1],packet[12]);
 	}
 
@@ -187,7 +196,7 @@ static void __attribute__((unused)) XK_initialize_txid()
 
 static void __attribute__((unused)) XK_RF_init()
 {
-	XN297_Configure(XN297_CRCEN, XN297_SCRAMBLED, sub_protocol==X420 ? XN297_1M : XN297_250K);
+	XN297_Configure(XN297_CRCEN, XN297_SCRAMBLED, sub_protocol==X450 ? XN297_250K : XN297_1M );
 	XN297_SetTXAddr((uint8_t*)"\x68\x94\xA6\xD5\xC3", 5);						// Bind address
 	XN297_HoppingCalib(XK_RF_BIND_NUM_CHANNELS+XK_RF_NUM_CHANNELS);				// Calibrate all channels
 }
@@ -209,7 +218,8 @@ uint16_t XK_callback()
 
 void XK_init()
 {
-	BIND_IN_PROGRESS;															// Autobind protocol
+	if(sub_protocol != XK_CARS)
+		BIND_IN_PROGRESS;															// Autobind protocol
 	XK_initialize_txid();
 	XK_RF_init();
 	hopping_frequency_no = 0;

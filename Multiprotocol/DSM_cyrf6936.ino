@@ -18,16 +18,21 @@
 #include "iface_cyrf6936.h"
 
 //#define DSM_DEBUG_FWD_PGM
+//#define DEBUG_BIND  1
 
-//#define DSM_GR300
+#define CLONE_BIT_MASK			0x20
+#define DSM_BIND_CHANNEL		0x0D	//13 This can be any odd channel
+#define DSM2_SFC_PERIOD			16500
 
-#define CLONE_BIT_MASK 0x20 
-
-#define DSM_BIND_CHANNEL 0x0d //13 This can be any odd channel
-
-//During binding we will send BIND_COUNT/2 packets
+//During binding we will send BIND_COUNT packets
 //One packet each 10msec
-#define DSM_BIND_COUNT 300
+//
+// Most RXs seems to work properly with a long BIND send count (3s): Spektrum, OrangeRX. 
+// Lemon-RX G2s seems to have a timeout waiting for the channel to get quiet after the 
+// first good BIND packet.. If using 3s (300), Lemon-RX will not transmit the BIND-Response packet. 
+
+#define DSM_BIND_COUNT			180  // About 1.8s
+#define DSM_BIND_COUNT_READ		600  // About 4.2s of waiting for Response
 
 enum {
 	DSM_BIND_WRITE=0,
@@ -104,7 +109,6 @@ static void __attribute__((unused)) DSM_build_bind_packet()
 		#endif
 	else									// DSMX_2F && DSM_AUTO
 		packet[12] = 0xb2;					// DSMX/2048 2 packets
-	
 
 	packet[13] = 0x00;						//???
 	for(i = 8; i < 14; i++)
@@ -118,8 +122,8 @@ static void __attribute__((unused)) DSM_initialize_bind_phase()
 	CYRF_ConfigRFChannel(DSM_BIND_CHANNEL); //This seems to be random?
 	//64 SDR Mode is configured so only the 8 first values are needed but need to write 16 values...
 	uint8_t code[16];
-	DSM_read_code(code,0,8,8);
-	CYRF_ConfigDataCode(code, 16);
+	DSM_read_code(code,0,8);
+	CYRF_ConfigDataCode(code);
 	DSM_build_bind_packet();
 }
 
@@ -131,8 +135,13 @@ static void __attribute__((unused)) DSM_update_channels()
 	if(num_ch<3 || num_ch>12)
 		num_ch=6;						// Default to 6 channels if invalid choice...
 
-	if(sub_protocol==DSMR && num_ch>7)
-		num_ch=7;						// Max 7 channels in DSMR
+	#ifndef MULTI_AIR
+		if(sub_protocol==DSMR && num_ch>7)
+			num_ch=7;						// Max 7 channels in DSMR
+
+		if(sub_protocol==DSM2_SFC && num_ch>5)
+			num_ch=5;						// Max 5 channels in DSM2_SFC
+	#endif
 
 	// Create channel map based on number of channels and refresh rate
 	uint8_t idx=num_ch-3;
@@ -168,19 +177,21 @@ static void __attribute__((unused)) DSM_build_data_packet(uint8_t upper)
 			bits=10;								// Only DSM2_1F is using a resolution of 1024
 	}
 
-	if(sub_protocol == DSMR)
-	{
-		for (uint8_t i = 0; i < 7; i++)
+	#ifndef MULTI_AIR
+		if(sub_protocol == DSMR || sub_protocol == DSM2_SFC)
 		{
-			uint16_t value = 0x0000;
-			if(i < num_ch)
-				value=Channel_data[i]<<1;
-			packet[i*2+2] = (value >> 8) & 0xff;
-			packet[i*2+3] = (value >> 0) & 0xff;
+			for (uint8_t i = 0; i < 7; i++)
+			{
+				uint16_t value = 0x0000;
+				if(i < num_ch)
+					value=Channel_data[i]<<1;
+				packet[i*2+2] = (value >> 8) & 0xff;
+				packet[i*2+3] = (value >> 0) & 0xff;
+			}
+			return;
 		}
-		return;
-	}
-
+	#endif
+	
 	#ifdef DSM_THROTTLE_KILL_CH
 		uint16_t kill_ch=Channel_data[DSM_THROTTLE_KILL_CH-1];
 	#endif
@@ -258,8 +269,18 @@ static uint8_t __attribute__((unused)) DSM_Check_RX_packet()
 uint16_t DSM_callback()
 {
 	#if defined MULTI_EU
-		if(sub_protocol == DSM2_1F || sub_protocol == DSM2_2F)
+		if(sub_protocol == DSM2_1F || sub_protocol == DSM2_2F || sub_protocol == DSM2_SFC)
+		{
+			SUB_PROTO_INVALID;
 			return 11000;
+		}
+	#endif
+	#if defined MULTI_AIR
+		if(sub_protocol == DSMR || sub_protocol == DSM2_SFC)
+		{
+			SUB_PROTO_INVALID;
+			return 11000;
+		}
 	#endif
 	#define DSM_CH1_CH2_DELAY	4010			// Time between write of channel 1 and channel 2
 	#ifdef STM32_BOARD
@@ -273,12 +294,7 @@ uint16_t DSM_callback()
 		uint8_t len;
 	#endif
 	uint8_t start;
-
-	#ifdef DSM_GR300
-		uint16_t timing=5000+(convert_channel_8b(CH13)*100);
-		debugln("T=%u",timing);
-	#endif
-	
+	//debugln("P=%d",phase);
 	switch(phase)
 	{
 		case DSM_BIND_WRITE:
@@ -292,11 +308,14 @@ uint16_t DSM_callback()
 			return 10000;
 	#if defined DSM_TELEMETRY
 		case DSM_BIND_CHECK:
-			//64 SDR Mode is configured so only the 8 first values are needed but we need to write 16 values...
-			CYRF_ConfigDataCode((const uint8_t *)"\x98\x88\x1B\xE4\x30\x79\x03\x84", 16);
+      #if DEBUG_BIND
+        debugln("Bind Check");
+      #endif
+      //64 SDR Mode is configured so only the 8 first values are needed
+      CYRF_ConfigDataCode((const uint8_t *)"\x98\x88\x1B\xE4\x30\x79\x03\x84");
 			CYRF_SetTxRxMode(RX_EN);							//Receive mode
 			CYRF_WriteRegister(CYRF_05_RX_CTRL, 0x87);			//Prepare to receive
-			bind_counter=2*DSM_BIND_COUNT;						//Timeout of 4.2s if no packet received
+			bind_counter=DSM_BIND_COUNT_READ; //Timeout of 4.2s if no packet received
 			phase++;											// change from BIND_CHECK to BIND_READ
 			return 2000;
 		case DSM_BIND_READ:
@@ -312,10 +331,12 @@ uint16_t DSM_callback()
 					CYRF_ReadDataPacketLen(packet_in+1, 10);
 					if(DSM_Check_RX_packet())
 					{
-						debug("Bind");
-						for(uint8_t i=0;i<10;i++)
-							debug(" %02X",packet_in[i+1]);
-						debugln("");
+						#if DEBUG_BIND
+  						  debug("Bind");
+  						  for(uint8_t i=0;i<10;i++)
+  							debug(" %02X",packet_in[i+1]);
+  						  debugln("");
+						#endif
 						packet_in[0]=0x80;
 						packet_in[6]&=0x0F;						// It looks like there is a flag 0x40 being added by some receivers
 						if(packet_in[6]>12) packet_in[6]=12;
@@ -340,6 +361,9 @@ uint16_t DSM_callback()
 				}
 			if( --bind_counter == 0 )
 			{ // Exit if no answer has been received for some time
+        #if DEBUG_BIND
+          debugln("Bind Read TIMEOUT");
+        #endif
 				phase++;										// DSM_CHANSEL
 				return 7000 ;
 			}
@@ -351,24 +375,32 @@ uint16_t DSM_callback()
 			CYRF_SetTxRxMode(TX_EN);
 			hopping_frequency_no = 0;
 			phase = DSM_CH1_WRITE_A;							// in fact phase++
+			#ifndef MULTI_AIR
 			if(sub_protocol == DSMR)
 				DSM_set_sop_data_crc(false, true);
 			else
+			#endif
 				DSM_set_sop_data_crc(true, sub_protocol==DSMX_2F||sub_protocol==DSMX_1F);	//prep CH1
 			return 10000;
 		case DSM_CH1_WRITE_A:
 			#ifdef MULTI_SYNC
-				telemetry_set_input_sync(11000);				// Always request 11ms spacing even if we don't use half of it in 22ms mode
+				if(sub_protocol!=DSM2_SFC)
+					telemetry_set_input_sync(11000);			// Always request 11ms spacing even if we don't use half of it in 22ms mode
+				else
+					telemetry_set_input_sync(DSM2_SFC_PERIOD);
 			#endif
+			#ifndef MULTI_AIR
 			if(sub_protocol == DSMR)
 				CYRF_SetPower(0x08);							//Keep transmit power in sync
 			else
+			#endif
 				CYRF_SetPower(0x28);							//Keep transmit power in sync
 		case DSM_CH1_WRITE_B:
 			DSM_build_data_packet(phase == DSM_CH1_WRITE_B);	// build lower or upper channels
 		case DSM_CH2_WRITE_A:
 		case DSM_CH2_WRITE_B:
 			CYRF_ReadRegister(CYRF_04_TX_IRQ_STATUS);			// clear IRQ flags
+			//debugln_time("");
 			CYRF_WriteDataPacket(packet);
 			#if 0
 				for(uint8_t i=0;i<16;i++)
@@ -406,14 +438,14 @@ uint16_t DSM_callback()
 			phase++;										// change from CH2_CHECK to CH2_READ
 			CYRF_SetTxRxMode(RX_EN);						//Receive mode
 			CYRF_WriteRegister(CYRF_05_RX_CTRL, 0x87);		//0x80??? //Prepare to receive
-			if(sub_protocol==DSMR)
-			{
-				phase = DSM_CH2_READ_B;
-				return 11000 - DSM_WRITE_DELAY - DSM_READ_DELAY;
-			}
-			#ifdef DSM_GR300
-				if(num_ch==3)
-					return timing - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY - DSM_READ_DELAY;
+			#ifndef MULTI_AIR
+				if(sub_protocol==DSMR || sub_protocol == DSM2_SFC)
+				{
+					phase = DSM_CH2_READ_B;
+					if(sub_protocol == DSM2_SFC)
+						return DSM2_SFC_PERIOD - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY - DSM_READ_DELAY;
+					return 11000 - DSM_WRITE_DELAY - DSM_READ_DELAY;
+				}
 			#endif
 			return 11000 - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY - DSM_READ_DELAY;
 		case DSM_CH2_READ_A:
@@ -448,10 +480,6 @@ uint16_t DSM_callback()
 				CYRF_WriteRegister(CYRF_29_RX_ABORT, 0x00);	// Clear abort RX operation
 				CYRF_WriteRegister(CYRF_05_RX_CTRL, 0x87);	//0x80???	//Prepare to receive
 				phase = DSM_CH2_READ_B;
-				#ifdef DSM_GR300
-					if(num_ch==3)
-						return timing;
-				#endif
 				return 11000;
 			}
 			if (phase == DSM_CH2_READ_A)
@@ -472,19 +500,15 @@ uint16_t DSM_callback()
 				else										
 				{											//Normal mode 22ms
 					phase = DSM_CH1_WRITE_A;				// change from CH2_CHECK_A to CH1_WRITE_A (ie no upper)
-					#ifdef DSM_GR300
-						if(num_ch==3)
-							return timing - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY ;
+					#ifndef MULTI_AIR
+						if(sub_protocol==DSM2_SFC)
+							return DSM2_SFC_PERIOD - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY ;
 					#endif
 					return 22000 - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY ;
 				}
 			}
 			else
 				phase = DSM_CH1_WRITE_A;					// change from CH2_CHECK_B to CH1_WRITE_A (upper already transmitted so transmit lower)
-			#ifdef DSM_GR300
-				if(num_ch==3)
-					return timing - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY ;
-			#endif
 			return 11000 - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY;
 #endif
 	}
@@ -492,6 +516,7 @@ uint16_t DSM_callback()
 }
 
 
+#ifndef MULTI_AIR
 const uint8_t PROGMEM DSMR_ID_FREQ[][4 + 23] = {
 	{ 0x71, 0x74, 0x1c, 0xe4, 0x11, 0x2f, 0x17, 0x3d, 0x23, 0x3b, 0x0f, 0x21, 0x25, 0x49, 0x1d, 0x13, 0x4d, 0x1f, 0x41, 0x4b, 0x47, 0x05, 0x27, 0x15, 0x19, 0x3f, 0x07 },
 	{ 0xfe, 0xfe, 0xfe, 0xfe, 0x45, 0x31, 0x33, 0x4b, 0x11, 0x29, 0x49, 0x3f, 0x09, 0x13, 0x47, 0x21, 0x1d, 0x43, 0x1f, 0x05, 0x41, 0x19, 0x1b, 0x2d, 0x15, 0x4d, 0x0f },
@@ -515,22 +540,25 @@ const uint8_t PROGMEM DSMR_ID_FREQ[][4 + 23] = {
 	{ 0xff, 0xff, 0x00, 0x00, 0x2b, 0x35, 0x1b, 0x1d, 0x0f, 0x47, 0x09, 0x0d, 0x45, 0x41, 0x21, 0x11, 0x2f, 0x43, 0x27, 0x33, 0x4b, 0x37, 0x13, 0x19, 0x4d, 0x23, 0x17 },
 	{ 0x00, 0xff, 0x00, 0x00, 0x1b, 0x1d, 0x33, 0x13, 0x2b, 0x27, 0x09, 0x41, 0x25, 0x17, 0x19, 0x2d, 0x4b, 0x37, 0x45, 0x11, 0x21, 0x0d, 0x3d, 0x4d, 0x07, 0x39, 0x43 },
 	{ 0xff, 0x00, 0x00, 0x00, 0x37, 0x27, 0x43, 0x4b, 0x39, 0x13, 0x07, 0x0d, 0x25, 0x17, 0x29, 0x1b, 0x1d, 0x45, 0x19, 0x2d, 0x0b, 0x3d, 0x15, 0x47, 0x1f, 0x21, 0x4d } };
+#endif
 
 void DSM_init()
 { 
 	if(sub_protocol == DSMR)
 	{
-		if(option&CLONE_BIT_MASK)
-			SUB_PROTO_INVALID;
-		else
-		{
-			SUB_PROTO_VALID;
-			uint8_t row = rx_tx_addr[3]%22;
-			for(uint8_t i=0; i< 4; i++)
-				cyrfmfg_id[i] = pgm_read_byte_near(&DSMR_ID_FREQ[row][i]);
-			for(uint8_t i=0; i< 23; i++)
-				hopping_frequency[i] = pgm_read_byte_near(&DSMR_ID_FREQ[row][i+4]);
-		}
+		#ifndef MULTI_AIR
+			if(option&CLONE_BIT_MASK)
+				SUB_PROTO_INVALID;
+			else
+			{
+				//SUB_PROTO_VALID;
+				uint8_t row = rx_tx_addr[3]%22;
+				for(uint8_t i=0; i< 4; i++)
+					cyrfmfg_id[i] = pgm_read_byte_near(&DSMR_ID_FREQ[row][i]);
+				for(uint8_t i=0; i< 23; i++)
+					hopping_frequency[i] = pgm_read_byte_near(&DSMR_ID_FREQ[row][i+4]);
+			}
+		#endif
 	}
 	else
 	{
@@ -539,24 +567,28 @@ void DSM_init()
 			if(eeprom_read_byte((EE_ADDR)DSM_CLONE_EEPROM_OFFSET+4)==0xF0)
 			{
 				//read cloned ID from EEPROM
-				debugln("Using cloned ID");
 				uint16_t temp = DSM_CLONE_EEPROM_OFFSET;
 				for(uint8_t i=0;i<4;i++)
 					cyrfmfg_id[i] = eeprom_read_byte((EE_ADDR)temp++);
-				debug("Clone ID=")
-				for(uint8_t i=0;i<4;i++)
-					debug("%02x ", cyrfmfg_id[i]);
-				debugln("");
+				#if DEBUG_BIND
+					debugln("Using cloned ID");  
+					debug("Clone ID=")
+					for(uint8_t i=0;i<4;i++)
+						debug("%02x ", cyrfmfg_id[i]);
+					debugln("");
+				#endif
 			}
 			else
 			{
 				SUB_PROTO_INVALID;
-				debugln("No valid cloned ID");
+				#if DEBUG_BIND
+				  debugln("No valid cloned ID");
+				#endif
 			}
 		}
 		else
 		{
-			SUB_PROTO_VALID;
+			//SUB_PROTO_VALID;
 			CYRF_GetMfgData(cyrfmfg_id);
 		}
 	}
@@ -572,8 +604,8 @@ void DSM_init()
 		//Fix for OrangeRX using wrong DSM_pncodes by preventing access to "Col 8"
 		if(sop_col==0 && sub_protocol != DSMR)
 		{
-		cyrfmfg_id[rx_tx_addr[0]%3]^=0x01;					//Change a bit so sop_col will be different from 0
-		sop_col = (cyrfmfg_id[0] + cyrfmfg_id[1] + cyrfmfg_id[2] + 2) & 0x07;
+			cyrfmfg_id[rx_tx_addr[0]%3]^=0x01;					//Change a bit so sop_col will be different from 0
+			sop_col = (cyrfmfg_id[0] + cyrfmfg_id[1] + cyrfmfg_id[2] + 2) & 0x07;
 		}
 	}
 
@@ -610,9 +642,12 @@ void DSM_init()
 		DSM_initialize_bind_phase();		
 		phase = DSM_BIND_WRITE;
 		bind_counter=DSM_BIND_COUNT;
+		#if DEBUG_BIND
+			debugln("Bind Started: write count=%d",bind_counter);
+		#endif
 	}
 	else
-		phase = DSM_CHANSEL;//
+		phase = DSM_CHANSEL;
 }
 
 #endif

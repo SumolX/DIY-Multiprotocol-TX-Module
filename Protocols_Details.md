@@ -65,6 +65,7 @@ Protocol Name|Protocol Number|Sub_Proto 0|Sub_Proto 1|Sub_Proto 2|Sub_Proto 3|Su
 [Assan](Protocols_Details.md#ASSAN---24)|24|||||||||NRF24L01|
 [Bayang](Protocols_Details.md#BAYANG---14)|14|Bayang|H8S3D|X16_AH|IRDRONE|DHD_D4|QX100|||NRF24L01|XN297
 [Bayang RX](Protocols_Details.md#BAYANG-RX---59)|59|Multi|CPPM|||||||NRF24L01|XN297
+[BlueFly](Protocols_Details.md#BLUEFLY---95)|95|||||||||NRF24L01|
 [Bugs](Protocols_Details.md#BUGS---41)|41|||||||||A7105|
 [BugsMini](Protocols_Details.md#BUGSMINI---42)|42|BUGSMINI|BUGS3H|||||||NRF24L01|XN297
 [Cabell](Protocols_Details.md#Cabell---34)|34|Cabell_V3|C_TELEM|-|-|-|-|F_SAFE|UNBIND|NRF24L01|
@@ -74,13 +75,14 @@ CFlie|38|CFlie||||||||NRF24L01|
 [CX10](Protocols_Details.md#CX10---12)|12|GREEN|BLUE|DM007|-|J3015_1|J3015_2|MK33041||NRF24L01|XN297
 [Devo](Protocols_Details.md#DEVO---7)|7|Devo|8CH|10CH|12CH|6CH|7CH|||CYRF6936|
 [DM002](Protocols_Details.md#DM002---33)|33|||||||||NRF24L01|XN297
-[DSM](Protocols_Details.md#DSM---6)|6|DSM2_1F|DSM2_2F|DSMX_1F|DSMX_2F|AUTO|DSMR_1F|||CYRF6936|
+[DSM](Protocols_Details.md#DSM---6)|6|DSM2_1F|DSM2_2F|DSMX_1F|DSMX_2F|AUTO|DSMR_1F|DSM2SFC||CYRF6936|
 [DSM_RX](Protocols_Details.md#DSM_RX---70)|70|Multi|CPPM|||||||CYRF6936|
 [E010R5](Protocols_Details.md#E010R5---81)|81|||||||||CYRF6936|RF2500
 [E016H](Protocols_Details.md#E016H---85)|85|||||||||NRF24L01|XN297
 [E016HV2](Protocols_Details.md#E016HV2---80)|80|||||||||CC2500/NRF24L01|unknown
 [E01X](Protocols_Details.md#E01X---45)|45|E012|E015|||||||CYRF6936|HS6200
 [E129](Protocols_Details.md#E129---83)|83|E129|C186|||||||CYRF6936|RF2500
+[EazyRC](Protocols_Details.md#EazyRC---61)|61|||||||||NRF24L01|XN297L
 [ESky](Protocols_Details.md#ESKY---16)|16|ESky|ET4|||||||NRF24L01|
 [ESky150](Protocols_Details.md#ESKY150---35)|35|||||||||NRF24L01|
 [ESky150V2](Protocols_Details.md#ESKY150V2---69)|69|||||||||CC2500|NRF51822
@@ -114,6 +116,7 @@ CFlie|38|CFlie||||||||NRF24L01|
 [KN](Protocols_Details.md#KN---9)|9|WLTOYS|FEILUN|||||||NRF24L01|
 [Kyosho](Protocols_Details.md#Kyosho---73)|73|FHSS|Hype|||||||A7105|
 [Kyosho2](Protocols_Details.md#Kyosho2---93)|93|KT-17||||||||NRF24L01|
+[Kyosho3](Protocols_Details.md#Kyosho3---98)|98|ASF||||||||CYRF6936|
 [LOLI](Protocols_Details.md#LOLI---82)|82|||||||||NRF24L01|
 [Losi](Protocols_Details.md#Losi---89)|89|||||||||CYRF6936|
 [MJXq](Protocols_Details.md#MJXQ---18)|18|WLH08|X600|X800|H26D|E010*|H26WH|PHOENIX*||NRF24L01|XN297
@@ -130,17 +133,17 @@ CFlie|38|CFlie||||||||NRF24L01|
 [Q2X2](Protocols_Details.md#Q2X2---29)|29|Q222|Q242|Q282||||||NRF24L01|
 [Q303](Protocols_Details.md#Q303---31)|31|Q303|CX35|CX10D|CX10WD|||||NRF24L01|XN297
 [Q90C](Protocols_Details.md#Q90C---72)|72|Q90C*||||||||NRF24L01|XN297
-[RadioLink](Protocols_Details.md#RadioLink---74)|74|Surface|Air|DumboRC||||||CC2500|
+[RadioLink](Protocols_Details.md#RadioLink---74)|74|Surface|Air|DumboRC|RC4G|||||CC2500|
 [Realacc](Protocols_Details.md#Realacc---76)|76|R11||||||||NRF24L01|
 [Redpine](Protocols_Details.md#Redpine---50)|50|FAST|SLOW|||||||NRF24L01|XN297
 [Scanner](Protocols_Details.md#Scanner---54)|54|||||||||CC2500|
 [Scorpio](Protocols_Details.md#Scorpio---94)|94|||||||||CYRF6936|
+[SGF22](Protocols_Details.md#SGF22---97)|97|SGF22||||||||NRF24L01|XN297
 [Shenqi](Protocols_Details.md#Shenqi---19)|19|Shenqi||||||||NRF24L01|LT8900
 [Skyartec](Protocols_Details.md#Skyartec---68)|68|||||||||CC2500|CC2500
 [SLT](Protocols_Details.md#SLT---11)|11|SLT_V1|SLT_V2|Q100|Q200|MR100||||NRF24L01|CC2500
 [SymaX](Protocols_Details.md#Symax---10)|10|SYMAX|SYMAX5C|||||||NRF24L01|
-[Tiger](Protocols_Details.md#Tiger---61)|61|||||||||NRF24L01|XN297
-[Traxxas](Protocols_Details.md#Traxxas---43)|43|6519 RX||||||||CYRF6936|
+[Traxxas](Protocols_Details.md#Traxxas---43)|43|TQ||||||||CYRF6936|
 [V2x2](Protocols_Details.md#V2X2---5)|5|V2x2|JXD506|MR101||||||NRF24L01|
 [V761](Protocols_Details.md#V761---48)|48|3CH|4CH|TOPRC||||||NRF24L01|XN297
 [V911S](Protocols_Details.md#V911S---46)|46|V911S*|E119*|||||||NRF24L01|XN297
@@ -148,7 +151,7 @@ CFlie|38|CFlie||||||||NRF24L01|
 [WFLY2](Protocols_Details.md#WFLY2---79)|79|RF20x||||||||A7105|
 [WK2x01](Protocols_Details.md#WK2X01---30)|30|WK2801|WK2401|W6_5_1|W6_6_1|W6_HEL|W6_HEL_I|||CYRF6936|
 [XERALL](Protocols_Details.md#XERALL---91)|91|Tank||||||||NRF24L01|XN297
-[XK](Protocols_Details.md#XK---62)|62|X450|X420|||||||NRF24L01|XN297
+[XK](Protocols_Details.md#XK---62)|62|X450|X420|Cars||||||NRF24L01|XN297
 [YD717](Protocols_Details.md#YD717---8)|8|YD717|SKYWLKR|SYMAX4|XINXUN|NIHUI||||NRF24L01|
 [ZSX](Protocols_Details.md#ZSX---52)|52|280||||||||NRF24L01|XN297
 * "*" Sub Protocols designated by * suffix are using a XN297L@250kbps which will be emulated by default with the NRF24L01. If option (freq tune) is diffrent from 0, the CC2500 module (if installed) will be used instead. Each specific sub protocol has a more detailed explanation.
@@ -325,7 +328,11 @@ CH1|CH2|CH3|CH4
 ## Kyosho - *73*
 
 ### Sub_protocol FHSS - *0*
-Surface protocol called FHSS introduced in 2017. Transmitters: KT-531P, KT-431PT...
+Surface protocol called FHSS introduced in 2017. Transmitter: KT-531P. Models: Mini-Z.
+
+Surface protocol called Syncro. TX: KT-331, RX: KR-331
+
+Extended limits supported
 
 CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10|CH11|CH12|CH13|CH14
 ---|---|---|---|---|---|---|---|---|----|----|----|----|----
@@ -358,11 +365,9 @@ Models: TX: CADET 4 LITE
 **Only 1 frequency hopping table**
 
 ### Sub_protocol SCX24 - *2*
-TX: Axial AX-4 2.4GHz transmitter and Panda Hobby 3CH Smart Radio 2.4GHz (MT-305A)
+TX: Axial AX-4 2.4GHz transmitter, HPI TF-41 and Panda Hobby 3CH Smart Radio 2.4GHz (MT-305A)
 
-Models: Axial SCX24: Deadbolt, Jeep Wranger Rubicon, Chevrolet 1967 C10, B-17 Betty and Panda Hobby: Tetra K1, X1, X2
-
-**Only 2 frequency hopping tables**
+Models: Axial SCX24: Deadbolt, Jeep Wranger Rubicon, Chevrolet 1967 C10, B-17 Betty, HPI RF-50 and Panda Hobby: Tetra K1, X1, X2
 
 Extended limits supported
 
@@ -536,11 +541,20 @@ Surface DSMR receivers
 
 **Only 22 IDs available**, use RX num to cycle through them.
 
-Telemetry enabled, extended limits available.
+Telemetry enabled, extended limits available and no channel mapping. Do not use DSM/AUTO to bind but DSM/R_1F instead.
 
 CH1|CH2|CH3|CH4|CH5|CH6|CH7
 ---|---|---|---|---|---|---
 STR|THR|AUX1|AUX2|AUX3|AUX4|AUX5
+
+### Sub_protocol DSM2SFC - *6*
+Surface DSM2 receivers, tested with a SR3100
+
+Extended limits available and no channel mapping. Do not use DSM/AUTO to bind but DSM/2SFC instead.
+
+CH1|CH2|CH3
+---|---|---
+STR|THR|AUX1
 
 ## DSM_RX - *70*
 The DSM receiver protocol enables master/slave trainning, separate access from 2 different radios to the same model,...
@@ -616,9 +630,17 @@ Calib is the same as the original radio with both sticks down and to the left in
 Models: Eachine E129/E130 and Twister Ninja 250
 
 ### Sub_protocol C186 - *1*
-Models: C186/E120, C127/E110, K127, C159
+Models: RC ERA C186/E120, C127/E110, K127, C159, C189, C129v2
 
 The FC of the heli seems to store the trims Trim A/E/R=CH7..9. If you use these trims, make sure to center them after powering off the heli or they will be added to the previous trims and over correct.
+
+CH10|CH11
+---|---
+Loop|Flip
+
+Loop: circular flight on the C159 (others?)
+
+Flip: flip/aerobatic on the C129v2 (others?)
 
 ## J6Pro - *22*
 
@@ -626,10 +648,19 @@ CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10|CH11|CH12
 ---|---|---|---|---|---|---|---|---|----|----|----
 A|E|T|R|CH5|CH6|CH7|CH8|CH9|CH10|CH11|CH12
 
+## Kyosho3 - *98*
+
+### Sub_protocol ASF - *0*
+Surface protocol ASF. Models: Mini-Z.
+
+Extended limits supported
+
+CH1|CH2|CH3|CH4
+---|---|---|---
+STEERING|THROTTLE|CH3|CH4
+
 ## Losi - *89*
 TX: LSR-3000
-
-**Only 1 ID available**. More IDs can be added if you dump your original TX.
 
 Extended limits supported
 
@@ -660,7 +691,7 @@ CH1|CH2|CH3|CH4
 A|E|T|R
 
 ## Traxxas - *43*
-Receiver 6519
+Transmitter TQ, Receivers: 6519, ECM-2.5
 
 Extended limits supported
 
@@ -989,6 +1020,17 @@ Telemetry: RX_RSSI (for the original value add -256), TX_RSSI, TX_QLY (0..100%)
 ### Sub_protocol DumboRC - *2*
 Compatible RXs: X6/X6F/X6FG
 
+### Sub_protocol RC4G - *3*
+Compatible RXs: R4EH-G(/R4EH-H)
+
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9
+---|---|---|---|---|---|---|---|---
+CH1|CH2|CH3|CH4|CH5|FS_CH1|FS_CH2|FS_CH3|FS_CH4
+
+FS=FailSafe
+
+CH5 is driven by CH3 on the original TX, gyro sensitivity?
+
 ## Futaba - *21*
 Also called SFHSS depending on radio version.
 
@@ -1023,6 +1065,17 @@ A|E|T|R|CH5|CH6|CH7
 If a CC2500 is installed it will be used for all the below protocols. Option in this case is used for fine frequency tuning like any CC2500 protocols so check the [Frequency Tuning page](/docs/Frequency_Tuning.md).
 
 If only a NRF24L01 is installed then these protocols might be problematic because they are using the XN297L emulation with a transmission speed of 250kbps which doesn't work very well with every NRF24L01, this is an hardware issue with the authenticity and accuracy of the components.
+
+## BLUEFLY - *95*
+Model: HP100
+
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8
+---|---|---|---|---|---|---|---
+A|E|T|R|CH5|CH6|CH7|CH8
+
+TRIM: either use this channel for trim only or add a mixer with aileron to increase the roll rate.
+
+RATE: -100% high rate, +100% low rate
 
 ## GD00X - *47*
 Model: GD005 C-17 Transport, GD006 DA62 and ZC-Z50
@@ -1370,17 +1423,13 @@ Models: WLtoys V911S, XK A110
 ### Sub_protocol E119 - *1*
 Models: Eachine E119, JJRC W01-J3, XK A220 P-40, XK A800 R2, F959S R2, A160 R2, A280
 
-CH1|CH2|CH3|CH4|CH5|CH6|CH7
----|---|---|---|---|---|---
-A|E|T|R|CALIB|RATE|6G_3D
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9
+---|---|---|---|---|---|---|---|---
+A|E|T|R|CALIB|RATE|6G_3D|6GSENIOR|LIGHT
+
+A280 -> 6GSENIOR: -100% - 6G, +100% - Senior mode (turn off gyro), LIGHT: cycle the light through on-flash-off when the CH9 value is changed from -100% to 100%
 
 ## XK - *62*
-
-CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10
----|---|---|---|---|---|---|---|---|----
-A|E|T|R|Flight_modes|Take_off|Emerg stop|3D/6G|Picture|Video
-
-Flight_modes: -100%=M-Mode, 0%=6G-Mode, +100%=V-Mode. CH6-CH10 are mementary switches.
 
 CC2500: only X450 is supported.
 
@@ -1391,8 +1440,30 @@ If a CC2500 is installed it will be used for this sub protocol. Option in this c
 
 If only a NRF24L01 is installed then this sub protocol might be problematic because it is using the xn297L emulation with a transmission speed of 250kbps which doesn't work very well with every NRF24L01, this is an hardware issue with the authenticity and accuracy of the components.
 
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10
+---|---|---|---|---|---|---|---|---|----
+A|E|T|R|Flight_modes|Take_off|Emerg stop|3D/6G|Picture|Video
+
+Flight_modes: -100%=M-Mode, 0%=6G-Mode, +100%=V-Mode. CH6-CH10 are mementary switches.
+
 ### Sub_protocol X420 - *1*
 Models: XK X420/X520 (TX=X4)
+
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10
+---|---|---|---|---|---|---|---|---|----
+A|E|T|R|Flight_modes|Take_off|Emerg stop|3D/6G|Picture|Video
+
+Flight_modes: -100%=M-Mode, 0%=6G-Mode, +100%=V-Mode. CH6-CH10 are mementary switches.
+
+Model: Tiger Drone 1400782
+
+CH1|CH2|CH3|CH4|CH11|CH12
+---|---|---|---|---|---
+A|E|T|R|FLIP|LIGHT
+
+### Sub_protocol Cars - *2*
+Models: WLtoys cars 284131/284161/284010/124016/124017/144010 and Eachine EAT14
+
 
 ***
 # NRF24L01 RF Module
@@ -1420,13 +1491,13 @@ Channels 14 and 15 (ANAAUX1 and ANAAUX2) only available with analog aux channel 
 ### Sub_protocol BAYANG - *0*
 Models: Eachine H8(C) mini, BayangToys X6/X7/X9, JJRC JJ850, Floureon H101 ...
 
-Option=0 -> normal Bayang protocol
+Option=0 or Telemetry = Off -> normal Bayang protocol
 
-Option=1 -> enable telemetry with [Silverxxx firmware](https://github.com/silver13/H101-acro/tree/master). Value returned to the TX using FrSkyD Hub are RX RSSI, TX RSSI, A1=uncompensated battery voltage (set the ratio to 5.0 and adjust with offset), A2=compensated battery voltage (set the ratio to 5.0 and adjust with offset) and if supported AccX=P, AccY=I, ACCZ=D (which you can rename after the sensors discovery)
+Option=1 or Telemetry = On -> enable telemetry with [Silverxxx firmware](https://github.com/silver13/H101-acro/tree/master). Value returned to the TX using FrSkyD Hub are RX RSSI, TX RSSI, A1=uncompensated battery voltage (set the ratio to 5.0 and adjust with offset), A2=compensated battery voltage (set the ratio to 5.0 and adjust with offset) and if supported AccX=P, AccY=I, ACCZ=D (which you can rename after the sensors discovery)
 
-Option=2 -> enable analog aux channels with [NFE Silverware firmware](https://github.com/NotFastEnuf/NFE_Silverware). Two otherwise static bytes in the protocol overridden to add two 'analog' (non-binary) auxiliary channels.
+Option=2 or Telemetry = Off+AUX -> enable analog aux channels with [NFE Silverware firmware](https://github.com/NotFastEnuf/NFE_Silverware). Two otherwise static bytes in the protocol overridden to add two 'analog' (non-binary) auxiliary channels.
 
-Option=3 -> both Silverware telemetry and analog aux channels enabled.
+Option=3 or Telemetry = On+AUX-> both Silverware telemetry and analog aux channels enabled.
 
 ### Sub_protocol H8S3D - *1*
 Model: H8S 3D
@@ -1602,6 +1673,13 @@ CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9
 ---|---|---|---|---|---|---|---|---
 A|E|T|R|STOP|FLIP|-|HEADLESS|RTH
 
+## EazyRC - *61*
+Autobind protocol
+
+CH1|CH2|CH3|CH4
+---|---|---|---
+STEERING||THROTTLE|
+
 ## ESKY - *16*
 
 CH1|CH2|CH3|CH4|CH5|CH6
@@ -1647,13 +1725,13 @@ Only 8 TX IDs available
 Model: FX620 SU35
 
 ### Sub_protocol 9630 - *2*
-Model: FX9630 and QIDI-550
+Model: FX9630, FX9603 and QIDI-550
 
 CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9
 ---|---|---|---|---|---|---|---|---
 A|E|T|R|RATE|GYRO|TrimR|TrimA|TrimE
 
-FX9630 Gyro: -100%=6G small throw, 0%=6G large throw, +100%=3D
+FX9630 and FX9603 Gyro: -100%=6G small throw, 0%=6G large throw, +100%=3D
 
 QIDI-550 Gyro: -100%=3D, 0%=6G, +100%=Torque
 
@@ -1731,9 +1809,9 @@ CH1|CH2|CH3|CH4|CH5
 | | |T|R|AUX
 
 ## KN - *9*
-CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10|CH11
----|---|---|---|---|---|---|---|---|----|----
-A|E|T|R|DR|THOLD|IDLEUP|GYRO|Ttrim|Atrim|Etrim
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10|CH11|CH12|CH13
+---|---|---|---|---|---|---|---|---|----|----|----|----
+A|E|T|R|DR|THOLD|IDLEUP|GYRO|Ttrim|Atrim|Etrim|Rtrim|HoverDebugging
 
 Dual Rate: +100%=full range, Throttle Hold: +100%=hold, Idle Up: +100%=3D, GYRO: -100%=6G, +100%=3G
 
@@ -1892,13 +1970,9 @@ A|E|T|R|FLIP|LED|PICTURE|VIDEO|HEADLESS|RTH|XCAL|YCAL
 Model: JXD 509 is using Q282 with CH12=Start/Stop motors
 
 ## Realacc - *76*
-Model: Realacc R11
-
-Untested protocol, let me know if it works.
+Model: Realacc R11, Eachine E017
 
 Autobind protocol
-
-### Sub_protocol R11 - *0*
 
 CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10
 ---|---|---|---|---|---|---|---|---|----
@@ -1909,6 +1983,15 @@ A|E|T|R|FLIP|LIGHT|CALIB|HLESS|RTH|UNK
 
 ### Sub_protocol FAST - *0*
 ### Sub_protocol SLOW - *1*
+
+## SGF22 - *97*
+Autobind protocol
+
+Model: SGF22
+
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9
+---|---|---|---|---|---|---|---|---
+A|E|T|R|MODE|FLIP|LIGHT|PHOTO|VIDEO
 
 ## Shenqi - *19*
 Autobind protocol
@@ -1942,7 +2025,7 @@ CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10|CH11
 A|E|T|R|FLIP|LIGHT|PICTURE|VIDEO|HEADLESS|MAG_CAL_X|MAG_CAL_Y
 
 ### Sub_protocol V2x2 - *0*
-Models: WLToys V202/252/272, JXD 385/388, JJRC H6C, Yizhan Tarantula X6 ...
+Models: WLToys V202/252/272/A959/K969/K979/K989/K999, JXD 385/388, JJRC H6C, Yizhan Tarantula X6 ...
 
 PICTURE: also automatic Missile Launcher and Hoist in one direction
 
@@ -1971,15 +2054,6 @@ MOT_ON_OFF: momentary switch (you need to maintaint it for at least 1.5sec for o
 AUTO: Land=-100% Takeoff=+100%
 
 The model can work with a none centered throttle.
-
-## Tiger - *61*
-Autobind protocol
-
-**Only 1 ID**
-
-CH1|CH2|CH3|CH4|CH5|CH6
----|---|---|---|---|---
-A|E|T|R|FLIP|LIGHT
 
 ## V761 - *48*
 
