@@ -17,7 +17,7 @@
 
 #include "iface_cyrf6936.h"
 
-#define KYOSHO3_FORCE_ID
+//#define KYOSHO3_FORCE_ID
 //#define KYOSHO3_DEBUG
 
 #define KYOSHO3_BIND_PACKET_SIZE	4
@@ -42,6 +42,8 @@ static uint16_t __attribute__((unused)) KYOSHO3_send_packet()
 	CYRF_SetPower(0x28);
 	if(IS_BIND_IN_PROGRESS)
 	{
+		if(--bind_counter==0)
+			BIND_DONE;
 		packet[0] = 0xAA;
 		//ID
 		memcpy(&packet[1],&rx_tx_addr[1],3);
@@ -86,11 +88,6 @@ static uint16_t __attribute__((unused)) KYOSHO3_send_packet()
 
 uint16_t KYOSHO3_callback()
 {
-	if(IS_BIND_IN_PROGRESS)
-	{
-		if(--bind_counter==0)
-			BIND_DONE;
-	}
 	return KYOSHO3_send_packet();
 }
 
@@ -102,22 +99,23 @@ void KYOSHO3_init()
 	CYRF_WritePreamble(0x333304);
 
 	//Find a free even channel
-	CYRF_FindBestChannels(hopping_frequency,1,1,0x04,0x50);
+	CYRF_FindBestChannels(hopping_frequency,1,1,0x04,0x50, FIND_CHANNEL_EVEN);
 
 	#ifdef KYOSHO3_FORCE_ID					// data taken from TX dump
-		rx_tx_addr[1]=0x01;
-		rx_tx_addr[2]=0xAB;
-		rx_tx_addr[3]=0x31;
+		rx_tx_addr[1] = 0x01;
+		rx_tx_addr[2] = 0xAB;
+		rx_tx_addr[3] = 0x31;
 		hopping_frequency[0] = 0x04;
 	#endif
 	#ifdef KYOSHO3_DEBUG
 		debugln("ID: %02X %02X %02X",rx_tx_addr[1],rx_tx_addr[2],rx_tx_addr[3]);
 		debugln("RF CH: %02X",hopping_frequency[0]);
 	#endif
+
 	CYRF_ConfigRFChannel(hopping_frequency[0]);
 	
-	bind_counter=1000;
-	phase=0;
+	bind_counter = 8217;
+	phase = 0;
 }
 
 #endif

@@ -130,7 +130,7 @@ const char STR_SUBTYPE_DEVO[] =       "\x04""8ch\0""10ch""12ch""6ch\0""7ch\0";
 const char STR_SUBTYPE_YD717[] =      "\x07""Std\0   ""SkyWlkr""Syma X4""XINXUN\0""NIHUI\0 ";
 const char STR_SUBTYPE_KN[] =         "\x06""WLtoys""FeiLun";
 const char STR_SUBTYPE_SYMAX[] =      "\x03""Std""X5C";
-const char STR_SUBTYPE_SLT[] =        "\x06""V1_6ch""V2_8ch""Q100\0 ""Q200\0 ""MR100\0";
+const char STR_SUBTYPE_SLT[] =        "\x06""V1_6ch""V2_8ch""Q100\0 ""Q200\0 ""MR100\0""V1_4ch";
 const char STR_SUBTYPE_CX10[] =       "\x07""Green\0 ""Blue\0  ""DM007\0 ""-\0     ""JC3015a""JC3015b""MK33041";
 const char STR_SUBTYPE_CG023[] =      "\x05""Std\0 ""YD829";
 const char STR_SUBTYPE_BAYANG[] =     "\x07""Std\0   ""H8S3D\0 ""X16 AH\0""IRDrone""DHD D4\0""QX100\0 ";
@@ -148,7 +148,7 @@ const char STR_SUBTYPE_H83D[] =       "\x07""Std\0   ""H20H\0  ""H20Mini""H30Min
 const char STR_SUBTYPE_CORONA[] =     "\x05""V1\0  ""V2\0  ""FD V3";
 const char STR_SUBTYPE_HITEC[] =      "\x07""Optima\0""Opt Hub""Minima\0";
 const char STR_SUBTYPE_BUGS_MINI[] =  "\x06""Std\0  ""Bugs3H";
-const char STR_SUBTYPE_TRAXXAS[] =    "\x02""TQ";
+const char STR_SUBTYPE_TRAXXAS[] =    "\x03""TQ2""TQ1";
 const char STR_SUBTYPE_E01X[] =       "\x05""E012\0""E015\0";
 const char STR_SUBTYPE_GD00X[] =      "\x05""GD_V1""GD_V2";
 const char STR_SUBTYPE_REDPINE[] =    "\x04""Fast""Slow";
@@ -178,7 +178,7 @@ const char STR_SUBTYPE_JJRC345[] =    "\x08""JJRC345\0""SkyTmblr";
 const char STR_SUBTYPE_MOULDKG[] =    "\x06""Analog""Digit\0";
 const char STR_SUBTYPE_KF606[] =      "\x06""KF606\0""MIG320""ZCZ50\0";
 const char STR_SUBTYPE_E129[] =       "\x04""E129""C186";
-const char STR_SUBTYPE_FX[] =         "\x04""816\0""620\0""9630";
+const char STR_SUBTYPE_FX[] =         "\x04""816\0""620\0""9630""Q560";
 #define NO_SUBTYPE		nullptr
 
 #ifdef SEND_CPPM
@@ -333,7 +333,7 @@ const mm_protocol_definition multi_protocols[] = {
 		{PROTO_FUTABA,     STR_FUTABA,    STR_SUBTYPE_FUTABA,    1, OPTION_RFTUNE,  1, 1, SW_CC2500, SFHSS_init,      SFHSS_callback      },
 	#endif
 	#if defined(FX_NRF24L01_INO)
-		{PROTO_FX,         STR_FX,        STR_SUBTYPE_FX,        3, OPTION_NONE,    0, 0, SW_NRF,    FX_init,         FX_callback         },
+		{PROTO_FX,         STR_FX,        STR_SUBTYPE_FX,        4, OPTION_NONE,    0, 0, SW_NRF,    FX_init,         FX_callback         },
 	#endif
 	#if defined(FY326_NRF24L01_INO)
 		{PROTO_FY326,      STR_FY326,     STR_SUBTYPE_FY326,     2, OPTION_NONE,    0, 0, SW_NRF,    FY326_init,      FY326_callback      },
@@ -462,13 +462,13 @@ const mm_protocol_definition multi_protocols[] = {
 		{PROTO_SKYARTEC,   STR_SKYARTEC,  NO_SUBTYPE,            0, OPTION_RFTUNE,  0, 1, SW_CC2500, SKYARTEC_init,   SKYARTEC_callback   },
 	#endif
 	#if defined(SLT_CCNRF_INO)
-		{PROTO_SLT,        STR_SLT,       STR_SUBTYPE_SLT,       5, OPTION_RFTUNE,  0, 1, SW_NRF,    SLT_init,        SLT_callback        },
+		{PROTO_SLT,        STR_SLT,       STR_SUBTYPE_SLT,       6, OPTION_RFTUNE,  0, 1, SW_NRF,    SLT_init,        SLT_callback        },
 	#endif
 	#if defined(SYMAX_NRF24L01_INO)
 		{PROTO_SYMAX,      STR_SYMAX,     STR_SUBTYPE_SYMAX,     2, OPTION_NONE,    0, 0, SW_NRF,    SYMAX_init,      SYMAX_callback      },
 	#endif
 	#if defined(TRAXXAS_CYRF6936_INO)
-		{PROTO_TRAXXAS,    STR_TRAXXAS,   STR_SUBTYPE_TRAXXAS,   1, OPTION_NONE,    0, 0, SW_CYRF,   TRAXXAS_init,    TRAXXAS_callback    },
+		{PROTO_TRAXXAS,    STR_TRAXXAS,   STR_SUBTYPE_TRAXXAS,   2, OPTION_NONE,    0, 0, SW_CYRF,   TRAXXAS_init,    TRAXXAS_callback    },
 	#endif
 	#if defined(V2X2_NRF24L01_INO)
 		{PROTO_V2X2,       STR_V2X2,      STR_SUBTYPE_V2X2,      3, OPTION_NONE,    0, 0, SW_NRF,    V2X2_init,       V2X2_callback       },

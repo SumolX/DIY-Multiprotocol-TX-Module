@@ -37,6 +37,7 @@ boolean enhanced;
 boolean ack;
 uint8_t pid;
 uint8_t bitrate;
+uint8_t old_option;
 
 static void __attribute__((unused)) XN297Dump_RF_init()
 {
@@ -609,12 +610,11 @@ static uint16_t XN297Dump_callback()
 		{
 			if(phase==0)
 			{
-				address_length=3;
-				memcpy(rx_tx_addr, (uint8_t *)"\xBD\x54\x78", address_length); //"\x62\xE6\xBD\x54\x78"
-
-				bitrate=XN297DUMP_1M;
+				address_length=4;
+				memcpy(rx_tx_addr, (uint8_t *)"\xF4\x71\x8D\x01", address_length);	// bind \x7E\xB8\x63\xA9
+				bitrate=XN297DUMP_250K;
 				packet_length=7;
-				hopping_frequency_no=40; //bind ?, normal 40
+				hopping_frequency_no=0x50; //bind 0x50, normal ??
 				
 				NRF24L01_Initialize();
 				NRF24L01_SetTxRxMode(TXRX_OFF);
@@ -623,8 +623,9 @@ static uint16_t XN297Dump_callback()
 				NRF24L01_WriteRegisterMulti(NRF24L01_0A_RX_ADDR_P0, rx_tx_addr, address_length);	// set up RX address
 				NRF24L01_WriteReg(NRF24L01_11_RX_PW_P0, packet_length);				// Enable rx pipe 0
 				NRF24L01_WriteReg(NRF24L01_05_RF_CH, option);	//hopping_frequency_no);
-
-				debug("NRF dump, len=%d, rf=%d, address length=%d, bitrate=",packet_length,hopping_frequency_no,address_length);
+				old_option = option;
+				
+				debug("NRF dump, len=%d, rf=%d, address length=%d, bitrate=",packet_length,option,address_length);	//hopping_frequency_no,address_length);
 				switch(bitrate)
 				{
 					case XN297DUMP_250K:
@@ -643,6 +644,7 @@ static uint16_t XN297Dump_callback()
 				}
 				NRF24L01_WriteReg(NRF24L01_00_CONFIG, _BV(NRF24L01_00_PWR_UP) | _BV(NRF24L01_00_PRIM_RX)); //_BV(NRF24L01_00_EN_CRC) | _BV(NRF24L01_00_CRCO) | 
 				phase++;
+				time=0;
 			}
 			else
 			{
@@ -650,13 +652,23 @@ static uint16_t XN297Dump_callback()
 				{ // RX fifo data ready
 					if(NRF24L01_ReadReg(NRF24L01_09_CD))
 					{
+						XN297Dump_overflow();
+						uint16_t timeL=TCNT1;
+						if(TIMER2_BASE->SR & TIMER_SR_UIF)
+						{//timer just rolled over...
+							XN297Dump_overflow();
+							timeL=0;
+						}
+						time=(timeH<<16)+timeL-time;
+						debug("RX: %5luus ", time>>1);
+						time=(timeH<<16)+timeL;
 						NRF24L01_ReadPayload(packet, packet_length);
 						//bool ok=true;
 						uint8_t buffer[40];
 						memcpy(buffer,packet,packet_length);
 						//if(memcmp(&packet_in[0],&packet[0],packet_length))
 						{
-							debug("P:");
+							debug("C: %02X P:", option);
 							for(uint8_t i=0;i<packet_length;i++)
 								debug(" %02X",packet[i]);
 							debugln("");
@@ -718,7 +730,12 @@ static uint16_t XN297Dump_callback()
 					NRF24L01_FlushRx();
 					NRF24L01_WriteReg(NRF24L01_00_CONFIG, _BV(NRF24L01_00_PWR_UP) | _BV(NRF24L01_00_PRIM_RX)); //  _BV(NRF24L01_00_EN_CRC) | _BV(NRF24L01_00_CRCO) |
 				}
-				NRF24L01_WriteReg(NRF24L01_05_RF_CH, option);	//hopping_frequency_no);
+				XN297Dump_overflow();
+				if(old_option != option)
+				{
+					NRF24L01_WriteReg(NRF24L01_05_RF_CH, option);	//hopping_frequency_no);
+					old_option = option;
+				}
 			}
 		}
 		else if(sub_protocol == XN297DUMP_CC2500)

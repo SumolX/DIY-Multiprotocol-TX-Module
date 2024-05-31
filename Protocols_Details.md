@@ -98,7 +98,7 @@ CFlie|38|CFlie||||||||NRF24L01|
 [FrskyX2](Protocols_Details.md#FRSKYX2---64)|64|CH_16|CH_8|EU_16|EU_8|Cloned|Cloned_8|||CC2500|
 [Frsky_RX](Protocols_Details.md#FRSKY_RX---55)|55|Multi|CloneTX|EraseTX|CPPM|||||CC2500|
 [Futaba/SFHSS](Protocols_Details.md#Futaba---21)|21|SFHSS||||||||CC2500|
-[FX](Protocols_Details.md#FX---58)|28|816|620|9630||||||NRF24L01|
+[FX](Protocols_Details.md#FX---58)|28|816|620|9630|Q560|||||NRF24L01|
 [FY326](Protocols_Details.md#FY326---20)|20|FY326|FY319|||||||NRF24L01|
 [GD00X](Protocols_Details.md#GD00X---47)|47|GD_V1*|GD_V2*|||||||NRF24L01|XN297L
 [GW008](Protocols_Details.md#GW008---32)|32|||||||||NRF24L01|XN297
@@ -141,7 +141,7 @@ CFlie|38|CFlie||||||||NRF24L01|
 [SGF22](Protocols_Details.md#SGF22---97)|97|SGF22||||||||NRF24L01|XN297
 [Shenqi](Protocols_Details.md#Shenqi---19)|19|Shenqi||||||||NRF24L01|LT8900
 [Skyartec](Protocols_Details.md#Skyartec---68)|68|||||||||CC2500|CC2500
-[SLT](Protocols_Details.md#SLT---11)|11|SLT_V1|SLT_V2|Q100|Q200|MR100||||NRF24L01|CC2500
+[SLT](Protocols_Details.md#SLT---11)|11|SLT_V1|SLT_V2|Q100|Q200|MR100|V1_4CH|||NRF24L01|CC2500
 [SymaX](Protocols_Details.md#Symax---10)|10|SYMAX|SYMAX5C|||||||NRF24L01|
 [Traxxas](Protocols_Details.md#Traxxas---43)|43|TQ||||||||CYRF6936|
 [V2x2](Protocols_Details.md#V2X2---5)|5|V2x2|JXD506|MR101||||||NRF24L01|
@@ -552,6 +552,8 @@ Surface DSM2 receivers, tested with a SR3100
 
 Extended limits available and no channel mapping. Do not use DSM/AUTO to bind but DSM/2SFC instead.
 
+Servo refresh rate 22/11ms is repurposed to the frame rates 16.5ms(22) and 11ms(11).
+
 CH1|CH2|CH3
 ---|---|---
 STR|THR|AUX1
@@ -691,13 +693,15 @@ CH1|CH2|CH3|CH4
 A|E|T|R
 
 ## Traxxas - *43*
-Transmitter TQ, Receivers: 6519, ECM-2.5
+Transmitter TQ, Receivers: 6519, 2218(X), ECM-2.5
 
 Extended limits supported
 
-CH1|CH2|CH3|CH4
----|---|---|---
-AUX3|AUX4|THROTTLE|STEERING
+CH1|CH2|CH3|CH4|CH5|CH6
+---|---|---|---|---|---
+CH1|CH2|CH3|CH4|CH5|CH6
+
+Warning from v1.3.4.7 channels order have changed
 
 ## WFLY - *40*
 Receivers: WFR04S, WFR07S, WFR09S
@@ -1235,7 +1239,7 @@ CH1|CH2|CH3|CH4|CH5|CH6
 ---|---|---|---|---|---
 A|E|T|R|6G3D|Light
 
-Model: KFPLAN Z61 BF109
+Model: KFPLAN Z-Series like Z61 BF109, Z54 A380,...
 
 CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9
 ---|---|---|---|---|---|---|---|---
@@ -1408,6 +1412,12 @@ CH7 and CH8 have no visible effect
 FLIP: sets model into flip mode for approx 5 seconds at each throw of switch (rear red LED goes out while active) -100%..+100% or +100%..-100%
 
 MODE: -100% level, +100% acro
+
+### Sub_protocol V1_4CH - *5*
+
+CH1|CH2|CH3|CH4
+---|---|---|---
+CH1|CH2|CH3|CH4
 
 ## V911S - *46*
 
@@ -1725,7 +1735,7 @@ Only 8 TX IDs available
 Model: FX620 SU35
 
 ### Sub_protocol 9630 - *2*
-Model: FX9630, FX9603 and QIDI-550
+Model: FX9630, FX9603, QIDI-550
 
 CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9
 ---|---|---|---|---|---|---|---|---
@@ -1734,6 +1744,17 @@ A|E|T|R|RATE|GYRO|TrimR|TrimA|TrimE
 FX9630 and FX9603 Gyro: -100%=6G small throw, 0%=6G large throw, +100%=3D
 
 QIDI-550 Gyro: -100%=3D, 0%=6G, +100%=Torque
+
+### Sub_protocol Q560 - *3*
+Model: QIDI-560
+
+CH1|CH2|CH3|CH4|CH5|CH6|CH7
+---|---|---|---|---|---|---
+A|E|T|R|FLIP|GYRO|LEDs
+
+FLIP is a toggle channel meaning that -100% to +100% is a command and +100% to -100% is also a command
+
+Gyro: -100%=6G, 0%=3D+Gyro, +100%=3D
 
 ## FY326 - *20*
 
@@ -1974,9 +1995,9 @@ Model: Realacc R11, Eachine E017
 
 Autobind protocol
 
-CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10
----|---|---|---|---|---|---|---|---|----
-A|E|T|R|FLIP|LIGHT|CALIB|HLESS|RTH|UNK
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10|CH11
+---|---|---|---|---|---|---|---|---|----|----
+A|E|T|R|FLIP|LIGHT|CALIB|HLESS|RTH|THR_CUT|ROTATE
 
 ## Redpine - *50*
 [Link to the forum](https://www.rcgroups.com/forums/showthread.php?3236043-Redpine-Lowest-latency-RC-protocol)
@@ -1989,9 +2010,9 @@ Autobind protocol
 
 Model: SGF22
 
-CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9
----|---|---|---|---|---|---|---|---
-A|E|T|R|MODE|FLIP|LIGHT|PHOTO|VIDEO
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10
+---|---|---|---|---|---|---|---|---|---
+A|E|T|R|MODE|FLIP|LIGHT|PHOTO|VIDEO|TRIMRESET
 
 ## Shenqi - *19*
 Autobind protocol

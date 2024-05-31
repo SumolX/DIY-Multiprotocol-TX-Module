@@ -94,9 +94,12 @@ static void __attribute__((unused)) DSM_build_bind_packet()
 		packet[11] = 12;
 	else
 		packet[11] = num_ch;				// DX5 DSMR sends 0x48...
+	//packet[11] = 3;						// DX3R
 
 	if (sub_protocol==DSMR)
 		packet[12] = 0xa2;
+	else if (sub_protocol==DSM2_SFC)
+		packet[12] = 0x23;					// DX3R
 	else if (sub_protocol==DSM2_1F)
 		packet[12] = num_ch<8?0x01:0x02;	// DSM2/1024 1 or 2 packets depending on the number of channels
 	else if(sub_protocol==DSM2_2F)
@@ -179,12 +182,16 @@ static void __attribute__((unused)) DSM_build_data_packet(uint8_t upper)
 
 	#ifndef MULTI_AIR
 		if(sub_protocol == DSMR || sub_protocol == DSM2_SFC)
-		{
+		{ // 12 bits, full range, no reassignment
 			for (uint8_t i = 0; i < 7; i++)
 			{
 				uint16_t value = 0x0000;
 				if(i < num_ch)
+				{
 					value=Channel_data[i]<<1;
+					if(sub_protocol == DSM2_SFC)
+						value |= i<<12;
+				}
 				packet[i*2+2] = (value >> 8) & 0xff;
 				packet[i*2+3] = (value >> 0) & 0xff;
 			}
@@ -308,11 +315,11 @@ uint16_t DSM_callback()
 			return 10000;
 	#if defined DSM_TELEMETRY
 		case DSM_BIND_CHECK:
-      #if DEBUG_BIND
-        debugln("Bind Check");
-      #endif
-      //64 SDR Mode is configured so only the 8 first values are needed
-      CYRF_ConfigDataCode((const uint8_t *)"\x98\x88\x1B\xE4\x30\x79\x03\x84");
+			#if DEBUG_BIND
+				debugln("Bind Check");
+			#endif
+			//64 SDR Mode is configured so only the 8 first values are needed
+			CYRF_ConfigDataCode((const uint8_t *)"\x98\x88\x1B\xE4\x30\x79\x03\x84");
 			CYRF_SetTxRxMode(RX_EN);							//Receive mode
 			CYRF_WriteRegister(CYRF_05_RX_CTRL, 0x87);			//Prepare to receive
 			bind_counter=DSM_BIND_COUNT_READ; //Timeout of 4.2s if no packet received
@@ -384,7 +391,7 @@ uint16_t DSM_callback()
 			return 10000;
 		case DSM_CH1_WRITE_A:
 			#ifdef MULTI_SYNC
-				if(sub_protocol!=DSM2_SFC)
+				if(sub_protocol!=DSM2_SFC || option&0x40)		// option&40 in this case is 16.5ms/11ms frame rate for DSM2_SFC
 					telemetry_set_input_sync(11000);			// Always request 11ms spacing even if we don't use half of it in 22ms mode
 				else
 					telemetry_set_input_sync(DSM2_SFC_PERIOD);
@@ -401,7 +408,12 @@ uint16_t DSM_callback()
 		case DSM_CH2_WRITE_B:
 			CYRF_ReadRegister(CYRF_04_TX_IRQ_STATUS);			// clear IRQ flags
 			//debugln_time("");
-			CYRF_WriteDataPacket(packet);
+			#ifndef MULTI_AIR
+			if(sub_protocol==DSM2_SFC)
+				CYRF_WriteDataPacketLen(packet,2*(num_ch+1));
+			else
+			#endif
+				CYRF_WriteDataPacket(packet);
 			#if 0
 				for(uint8_t i=0;i<16;i++)
 					debug(" %02X", packet[i]);
@@ -443,7 +455,12 @@ uint16_t DSM_callback()
 				{
 					phase = DSM_CH2_READ_B;
 					if(sub_protocol == DSM2_SFC)
-						return DSM2_SFC_PERIOD - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY - DSM_READ_DELAY;
+					{
+						if(option&0x40)		// option&40 in this case is 16.5ms/11ms frame rate for DSM2_SFC
+							return 11000 - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY - DSM_READ_DELAY;
+						else
+							return DSM2_SFC_PERIOD - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY - DSM_READ_DELAY;
+					}
 					return 11000 - DSM_WRITE_DELAY - DSM_READ_DELAY;
 				}
 			#endif
@@ -502,7 +519,12 @@ uint16_t DSM_callback()
 					phase = DSM_CH1_WRITE_A;				// change from CH2_CHECK_A to CH1_WRITE_A (ie no upper)
 					#ifndef MULTI_AIR
 						if(sub_protocol==DSM2_SFC)
-							return DSM2_SFC_PERIOD - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY ;
+						{
+							if(option&0x40)					// option&40 in this case is 16.5ms/11ms frame rate for DSM2_SFC
+								return 11000 - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY ;
+							else
+								return DSM2_SFC_PERIOD - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY ;
+						}
 					#endif
 					return 22000 - DSM_CH1_CH2_DELAY - DSM_WRITE_DELAY ;
 				}
@@ -618,7 +640,7 @@ void DSM_init()
 	else if(sub_protocol != DSMR)
 	{ 
 		uint8_t tmpch[10];
-		CYRF_FindBestChannels(tmpch, 10, 5, 3, 75);
+		CYRF_FindBestChannels(tmpch, 10, 5, 3, 75, FIND_CHANNEL_ANY);
 		//
 		uint8_t idx = random(0xfefefefe) % 10;
 		hopping_frequency[0] = tmpch[idx];

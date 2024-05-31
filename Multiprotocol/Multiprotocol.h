@@ -19,7 +19,7 @@
 #define VERSION_MAJOR		1
 #define VERSION_MINOR		3
 #define VERSION_REVISION	4
-#define VERSION_PATCH_LEVEL	4
+#define VERSION_PATCH_LEVEL	9
 
 #define MODE_SERIAL 0
 
@@ -202,11 +202,12 @@ enum SYMAX
 };
 enum SLT
 {
-	SLT_V1	= 0,
-	SLT_V2	= 1,
-	Q100	= 2,
-	Q200	= 3,
-	MR100	= 4,
+	SLT_V1		= 0,
+	SLT_V2		= 1,
+	Q100		= 2,
+	Q200		= 3,
+	MR100		= 4,
+	SLT_V1_4	= 5,
 };
 enum CX10
 {
@@ -362,7 +363,8 @@ enum REDPINE
 };
 enum TRAXXAS
 {
-	TRAXXAS_TQ	= 0,
+	TRAXXAS_TQ2	= 0,
+	TRAXXAS_TQ1	= 1,
 };
 enum ESKY150
 {
@@ -477,6 +479,7 @@ enum FX
 	FX816			= 0,
 	FX620			= 1,
     FX9630          = 2,
+	FX_Q560			= 3,
 };
 
 #define NONE 		0
